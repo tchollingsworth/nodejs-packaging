@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.3
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -10,7 +10,6 @@ BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
-BuildRequires: findutils
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
@@ -97,17 +96,22 @@ rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
 
-%clean
-rm -rf $RPM_BUILD_ROOT
-
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
 
 %changelog
-* Fri Dec 14 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-6
+* Tue Dec 18 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-7
+- Add remaining changes from code review
+- Remove unnecessary BuildRequires on findutils
+- Remove %%clean section
 
+* Fri Dec 14 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-6
+- Fixes from code review
+- Fix executable permissions
+- Correct the License field
+- Build debuginfo properly
 
 * Thu Dec 13 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-5
 - Return back to using the standard binary name
