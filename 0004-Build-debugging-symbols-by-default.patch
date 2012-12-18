@@ -1,0 +1,25 @@
+From 93eb51852e0d9cdf5aebc6212eee5cb3273ddbc4 Mon Sep 17 00:00:00 2001
+From: Stephen Gallagher <sgallagh@redhat.com>
+Date: Fri, 14 Dec 2012 08:33:47 -0500
+Subject: [PATCH 4/4] Build debugging symbols by default
+
+---
+ configure | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index 9461d791ec63a63a7271dd3c99ebdf5456032187..ff3e75fd655ad4431dd402a200dbb810bc00eba2 100755
+--- a/configure
++++ b/configure
+@@ -550,7 +550,7 @@ output = {
+   'include_dirs': [],
+   'libraries': [],
+   'defines': [],
+-  'cflags': [],
++  'cflags': ['-g'],
+ }
+ 
+ configure_node(output)
+-- 
+1.8.0.1
+

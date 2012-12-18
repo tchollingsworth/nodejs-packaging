@@ -1,0 +1,117 @@
+From c11c6c57eb3f87d32207bf5e86a2e53cbabc8a60 Mon Sep 17 00:00:00 2001
+From: Stephen Gallagher <sgallagh@redhat.com>
+Date: Tue, 23 Oct 2012 19:54:22 -0400
+Subject: [PATCH 3/3] build: allow linking against system libuv
+
+---
+ configure                | 35 +++++++++++++++++++++++++++++++++++
+ doc/api/process.markdown |  1 +
+ node.gyp                 |  6 +++++-
+ 3 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/configure b/configure
+index a23c04cb77fda65453e4cbe9c916d3d3f14f3d26..9461d791ec63a63a7271dd3c99ebdf5456032187 100755
+--- a/configure
++++ b/configure
+@@ -164,6 +164,26 @@ parser.add_option("--shared-cares-libname",
+     dest="shared_cares_libname",
+     help="Alternative lib name to link to (default: 'cares')")
+ 
++parser.add_option("--shared-libuv",
++    action="store_true",
++    dest="shared_libuv",
++    help="Link to a shared libuv DLL instead of static linking")
++
++parser.add_option("--shared-libuv-includes",
++    action="store",
++    dest="shared_libuv_includes",
++    help="Directory containing libuv header files")
++
++parser.add_option("--shared-libuv-libpath",
++    action="store",
++    dest="shared_libuv_libpath",
++    help="A directory to search for the shared libuv DLL")
++
++parser.add_option("--shared-libuv-libname",
++    action="store",
++    dest="shared_libuv_libname",
++    help="Alternative lib name to link to (default: 'uv')")
++
+ parser.add_option("--with-dtrace",
+     action="store_true",
+     dest="with_dtrace",
+@@ -468,6 +488,20 @@ def configure_cares(o):
+         o['include_dirs'] += [options.shared_cares_includes]
+ 
+ 
++def configure_libuv(o):
++  o['variables']['node_shared_libuv'] = b(options.shared_libuv)
++
++  # assume shared libuv if one of these is set?
++  if options.shared_libuv_libpath:
++    o['libraries'] += ['-L%s' % options.shared_libuv_libpath]
++  if options.shared_libuv_libname:
++    o['libraries'] += ['-l%s' % options.shared_libuv_libname]
++  elif options.shared_libuv:
++    o['libraries'] += ['-luv']
++  if options.shared_libuv_includes:
++    o['include_dirs'] += [options.shared_libuv_includes]
++
++
+ def configure_v8(o):
+   o['variables']['v8_use_snapshot'] = b(not options.without_snapshot)
+   o['variables']['node_shared_v8'] = b(options.shared_v8)
+@@ -523,6 +557,7 @@ configure_node(output)
+ configure_libz(output)
+ configure_http_parser(output)
+ configure_cares(output)
++configure_libuv(output)
+ configure_v8(output)
+ configure_openssl(output)
+ 
+diff --git a/doc/api/process.markdown b/doc/api/process.markdown
+index 1593eec879ff5141d13cee548df4675e9a18213c..d479238f197e67972ad00412b6ba39eb78e93fa5 100644
+--- a/doc/api/process.markdown
++++ b/doc/api/process.markdown
+@@ -301,6 +301,7 @@ An example of the possible output looks like:
+          node_prefix: '',
+          node_shared_cares: 'false',
+          node_shared_http_parser: 'false',
++         node_shared_libuv: 'false',
+          node_shared_v8: 'false',
+          node_shared_zlib: 'false',
+          node_use_dtrace: 'false',
+diff --git a/node.gyp b/node.gyp
+index ca1a9f30503c40099fe4d1770887750fb681d5b9..3366535cc70751ca6d591a3428e1acdbb7e0d9c1 100644
+--- a/node.gyp
++++ b/node.gyp
+@@ -10,6 +10,7 @@
+     'node_shared_zlib%': 'false',
+     'node_shared_http_parser%': 'false',
+     'node_shared_cares%': 'false',
++    'node_shared_libuv%': 'false',
+     'node_use_openssl%': 'true',
+     'node_shared_openssl%': 'false',
+     'library_files': [
+@@ -59,7 +60,6 @@
+       'type': 'executable',
+ 
+       'dependencies': [
+-        'deps/uv/uv.gyp:libuv',
+         'node_js2c#host',
+       ],
+ 
+@@ -200,6 +200,10 @@
+           'dependencies': [ 'deps/cares/cares.gyp:cares' ],
+         }],
+ 
++        [ 'node_shared_libuv=="false"', {
++          'dependencies': [ 'deps/uv/uv.gyp:libuv' ],
++        }],
++
+         [ 'OS=="win"', {
+           'sources': [
+             'src/res/node.rc',
+-- 
+1.8.0
+
