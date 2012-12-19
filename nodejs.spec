@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.3
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -13,6 +13,9 @@ BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
+
+# Exclusive archs must match v8
+ExclusiveArch: %{ix86} x86_64 %{arm}
 
 # Node.js currently has a conflict with the 'node' package in Fedora
 # The ham-radio group has agreed to rename their binary for us, but
@@ -102,6 +105,9 @@ chmod 0755 %{buildroot}/%{_bindir}/node
 %{_mandir}/man1/node.*
 
 %changelog
+* Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
+- set exclusive arch list to match v8
+
 * Tue Dec 18 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-7
 - Add remaining changes from code review
 - Remove unnecessary BuildRequires on findutils
