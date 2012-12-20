@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.3
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -12,7 +12,7 @@ BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
-BuildRequires: openssl-devel >= 1:1.0.1
+BuildRequires: openssl-devel
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -105,6 +105,9 @@ chmod 0755 %{buildroot}/%{_bindir}/node
 %{_mandir}/man1/node.*
 
 %changelog
+* Thu Dec 20 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-9
+- Drop requirement on openssl 1.0.1
+
 * Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
 - set exclusive arch list to match v8
 
