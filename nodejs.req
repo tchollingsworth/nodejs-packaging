@@ -1,0 +1,152 @@
+#!/usr/bin/python
+
+"""
+Automatic dependency generator for Node.js libraries.
+
+Parsed from package.json.  See `man npm-json` for details.
+"""
+
+# Copyright 2012 T.C. Hollingsworth <tchollingsworth@gmail.com>
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to
+# deal in the Software without restriction, including without limitation the
+# rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+# sell copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
+# IN THE SOFTWARE.
+
+from __future__ import unicode_literals
+import json
+import re
+import sys
+
+RE_VERSION = re.compile(r'\s*v?([<>=~]{0,2})\s*([0-9][0-9\.\-]*)\s*')
+
+def main():
+    #npm2rpm uses functions here to write BuildRequires so don't print anything
+    #until the very end
+    deps = []
+
+    #it's highly unlikely that we'll ever get more than one file but we handle
+    #this like all RPM automatic dependency generation scripts anyway
+    paths = [path.rstrip() for path in sys.stdin.readlines()]
+
+    for path in paths:
+        if path.endswith('package.json'):
+            fh = open(path)
+            metadata = json.load(fh)
+            fh.close()
+
+            #write out the node.js interpreter dependency
+            req = 'nodejs(engine)'
+            
+            if 'engines' in metadata and 'node' in metadata['engines']:
+                deps += process_dep(req, metadata['engines']['node'])
+            else:
+                print req
+
+            if 'dependencies' in metadata:
+                for name, version in metadata['dependencies'].iteritems():
+                    req = 'npm(' + name + ')'
+                    deps += process_dep(req, version)
+
+    print '\n'.join(deps)
+
+def process_dep(req, version):
+    """Converts an individual npm dependency into RPM dependencies"""
+    
+    deps = []
+    
+    #there's no way RPM can do anything like an OR dependency
+    if '||' in version:
+        sys.stderr.write("WARNING: The {0} dependency contains an ".format(req) +
+            "OR (||) dependency: '{0}.  Please manually include ".format(version) +
+            "a versioned dependency in your spec file if necessary")
+        deps.append(req)
+            
+    elif ' - ' in version:
+        gt, lt = version.split(' - ')
+        deps.append(req + ' >= ' + gt)
+        deps.append(req + ' <= ' + lt)
+        
+    else:
+        m = re.match(RE_VERSION, version)
+
+        if m:
+            deps += convert_dep(req, m.group(1), m.group(2))
+
+            #There could be up to two versions here (e.g.">1.0 <3.1")
+            if len(version) > m.end():
+                m = re.match(RE_VERSION, version[m.end():])
+
+                if m:
+                    deps += convert_dep(req, m.group(1), m.group(2))
+        else:
+            #uh oh!
+            sys.stderr.write('WARNING: the automatic dependency generator ' +
+                'couldn\'t parse the entry for {0}. '.format(req) +
+                'Please check to see if the package.json is valid. If so, file ' +
+                'a bug against the nodejs package in bugzilla.')
+            deps.append(req)
+
+    return deps
+            
+def convert_dep(req, operator, version):
+    """Converts one of the two possibly listed versions into an RPM dependency"""
+    
+    deps = []
+
+    #any version will do
+    if not version or version == '*':
+        deps.append(req)
+
+    #any prefix but ~ makes things dead simple
+    elif operator in ['>', '<', '<=', '>=', '=']:
+        deps.append(' '.join([req, operator, version]))
+
+    #oh boy, here we go...
+    else:
+        #split the dotted portions into a list (handling trailing dots properly)
+        parts = [part if part else 'x' for part in version.split('.')]
+        parts = [int(part) if part != 'x' and not '-' in part
+                                                    else part for part in parts]
+
+        # 1 or 1.x or 1.x.x or ~1
+        if len(parts) == 1 or parts[1] == 'x':
+            deps.append('{0} >= {1}'.format(req, parts[0]))
+            deps.append('{0} < {1}'.format(req, parts[0]+1))
+
+        # 1.2.3 or 1.2.3-4 or 1.2.x or ~1.2.3 or 1.2
+        elif len(parts) == 3 or operator != '~':
+            # 1.2.x or 1.2
+            if len(parts) == 2 or parts[2] == 'x':
+                deps.append('{0} >= {1}.{2}'.format(req, parts[0], parts[1]))
+                deps.append('{0} < {1}.{2}'.format(req, parts[0], parts[1]+1))
+            # ~1.2.3
+            elif operator == '~':
+                deps.append('{0} >= {1}'.format(req, version))
+                deps.append('{0} < {1}.{2}'.format(req, parts[0], parts[1]+1))
+            # 1.2.3 or 1.2.3-4
+            else:
+                deps.append('{0} = {1}'.format(req, version))
+
+        # ~1.2
+        else:
+            deps.append('{0} >= {1}'.format(req, version))
+            deps.append('{0} < {1}'.format(req, parts[0]+1))
+
+    return deps
+            
+if __name__ == '__main__':
+    main()

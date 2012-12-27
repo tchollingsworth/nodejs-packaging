@@ -6,6 +6,11 @@ License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
 URL: http://nodejs.org/
 Source0: http://nodejs.org/dist/v%{version}/node-v%{version}.tar.gz
+Source1: macros.nodejs
+Source2: nodejs.attr
+Source3: nodejs.prov
+Source4: nodejs.req
+Source5: nodejs-symlink-deps
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
@@ -98,6 +103,16 @@ rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
 
+# own the sitelib directory
+mkdir -p %{buildroot}%{_prefix}/lib/node_modules
+
+# install rpm magic
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.nodejs
+install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
+install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
+install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
+install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
+
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
 cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
@@ -107,6 +122,9 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
+%{_rpmconfigdir}/fileattrs/nodejs.attr
+%{_rpmconfigdir}/nodejs*
+%dir %{_prefix}/lib/node_modules
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
@@ -118,6 +136,7 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 - system library patches are now upstream
 - respect optflags
 - include documentation in subpackage
+- add RPM dependency generation and related magic
 
 * Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
 - set exclusive arch list to match v8
