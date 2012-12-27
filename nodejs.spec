@@ -13,7 +13,7 @@ Source4: nodejs.req
 Source5: nodejs-symlink-deps
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
-BuildRequires: libuv-devel
+BuildRequires: libuv-devel >= %{version}
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
@@ -137,6 +137,7 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 - respect optflags
 - include documentation in subpackage
 - add RPM dependency generation and related magic
+- guard libuv depedency so it always gets bumped when nodejs does
 
 * Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
 - set exclusive arch list to match v8
