@@ -1,6 +1,6 @@
 Name: nodejs
-Version: 0.9.3
-Release: 8%{?dist}
+Version: 0.9.4
+Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -24,12 +24,6 @@ Conflicts: node <= 0.3.2-11
 
 # Patches
 
-# The following patches have been accepted upstream and can
-# be removed once node.js 0.9.4 is released
-Patch0001: 0001-build-allow-linking-against-system-http_parser.patch
-Patch0002: 0002-build-allow-linking-against-system-c-ares.patch
-Patch0003: 0003-build-allow-linking-against-system-libuv.patch
-
 # This patch is Fedora-specific and allows building the release
 # binaries with debugging symbols
 Patch0004: 0004-Build-debugging-symbols-by-default.patch
@@ -41,13 +35,16 @@ Node.js uses an event-driven, non-blocking I/O model that
 makes it lightweight and efficient, perfect for data-intensive
 real-time applications that run across distributed devices.
 
+%package docs
+Summary: Node.js API documentation
+Group: Documentation
+
+%description docs
+The API documentation for the Node.js JavaScript runtime.
 
 %prep
 %setup -q -n node-v%{version}
 
-%patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
 %patch0004 -p1
 
 # Make sure nothing gets included from bundled deps:
@@ -76,6 +73,8 @@ find deps/uv -name "*.c" -exec rm -f {} \;
 find deps/uv -name "*.h" -exec rm -f {} \;
 
 %build
+export CFLAGS='%{optflags}'
+export CXXFLAGS='%{optflags}'
 ./configure --prefix=%{_prefix} \
            --shared-v8 \
            --shared-openssl \
@@ -99,12 +98,27 @@ rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
 
+#install documentation
+mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
+cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
+rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
+
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
 
+%files docs
+%{_defaultdocdir}/%{name}-docs-%{version}
+%doc LICENSE
+
 %changelog
+* Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
+- new upstream release 0.9.4
+- system library patches are now upstream
+- respect optflags
+- include documentation in subpackage
+
 * Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
 - set exclusive arch list to match v8
 
