@@ -1,18 +1,25 @@
 Name: nodejs
-Version: 0.9.3
-Release: 9%{?dist}
+Version: 0.9.4
+Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
 URL: http://nodejs.org/
 Source0: http://nodejs.org/dist/v%{version}/node-v%{version}.tar.gz
+Source1: macros.nodejs
+Source2: nodejs.attr
+Source3: nodejs.prov
+Source4: nodejs.req
+Source5: nodejs-symlink-deps
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
-BuildRequires: libuv-devel
+BuildRequires: libuv-devel >= %{version}
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel
+#virtual provides for automatic depedency generation
+Provides: nodejs(engine) = %{version}
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -23,12 +30,6 @@ ExclusiveArch: %{ix86} x86_64 %{arm}
 Conflicts: node <= 0.3.2-11
 
 # Patches
-
-# The following patches have been accepted upstream and can
-# be removed once node.js 0.9.4 is released
-Patch0001: 0001-build-allow-linking-against-system-http_parser.patch
-Patch0002: 0002-build-allow-linking-against-system-c-ares.patch
-Patch0003: 0003-build-allow-linking-against-system-libuv.patch
 
 # This patch is Fedora-specific and allows building the release
 # binaries with debugging symbols
@@ -41,13 +42,16 @@ Node.js uses an event-driven, non-blocking I/O model that
 makes it lightweight and efficient, perfect for data-intensive
 real-time applications that run across distributed devices.
 
+%package docs
+Summary: Node.js API documentation
+Group: Documentation
+
+%description docs
+The API documentation for the Node.js JavaScript runtime.
 
 %prep
 %setup -q -n node-v%{version}
 
-%patch0001 -p1
-%patch0002 -p1
-%patch0003 -p1
 %patch0004 -p1
 
 # Make sure nothing gets included from bundled deps:
@@ -76,6 +80,8 @@ find deps/uv -name "*.c" -exec rm -f {} \;
 find deps/uv -name "*.h" -exec rm -f {} \;
 
 %build
+export CFLAGS='%{optflags}'
+export CXXFLAGS='%{optflags}'
 ./configure --prefix=%{_prefix} \
            --shared-v8 \
            --shared-openssl \
@@ -99,12 +105,43 @@ rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
 
+# own the sitelib directory
+mkdir -p %{buildroot}%{_prefix}/lib/node_modules
+
+# install rpm magic
+install -Dpm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.nodejs
+install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
+install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
+install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
+install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
+
+#install documentation
+mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
+cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
+rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
+
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
+%{_sysconfdir}/rpm/macros.nodejs
+%{_rpmconfigdir}/fileattrs/nodejs.attr
+%{_rpmconfigdir}/nodejs*
+%dir %{_prefix}/lib/node_modules
+
+%files docs
+%{_defaultdocdir}/%{name}-docs-%{version}
+%doc LICENSE
 
 %changelog
+* Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
+- new upstream release 0.9.4
+- system library patches are now upstream
+- respect optflags
+- include documentation in subpackage
+- add RPM dependency generation and related magic
+- guard libuv depedency so it always gets bumped when nodejs does
+
 * Thu Dec 20 2012 Stephen Gallagher <sgallagh@redhat.com> - 0.9.3-9
 - Drop requirement on openssl 1.0.1
 
