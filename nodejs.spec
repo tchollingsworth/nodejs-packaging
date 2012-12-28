@@ -114,8 +114,8 @@ install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
 
 #install documentation
-mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
-cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-doc-%{version}/html
+mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
+cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 
 %files
