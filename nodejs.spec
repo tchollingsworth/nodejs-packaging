@@ -18,6 +18,8 @@ BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
+#virtual provides for automatic depedency generation
+Provides: nodejs(engine) = %{version}
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -122,6 +124,7 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
+%{_sysconfdir}/rpm/macros.nodejs
 %{_rpmconfigdir}/fileattrs/nodejs.attr
 %{_rpmconfigdir}/nodejs*
 %dir %{_prefix}/lib/node_modules
