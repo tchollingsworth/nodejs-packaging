@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
