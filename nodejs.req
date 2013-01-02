@@ -71,7 +71,7 @@ def process_dep(req, version):
     #there's no way RPM can do anything like an OR dependency
     if '||' in version:
         sys.stderr.write("WARNING: The {0} dependency contains an ".format(req) +
-            "OR (||) dependency: '{0}.  Please manually include ".format(version) +
+            "OR (||) dependency: '{0}.\nPlease manually include ".format(version) +
             "a versioned dependency in your spec file if necessary")
         deps.append(req)
             
@@ -93,11 +93,6 @@ def process_dep(req, version):
                 if m:
                     deps += convert_dep(req, m.group(1), m.group(2))
         else:
-            #uh oh!
-            sys.stderr.write('WARNING: the automatic dependency generator ' +
-                'couldn\'t parse the entry for {0}. '.format(req) +
-                'Please check to see if the package.json is valid. If so, file ' +
-                'a bug against the nodejs package in bugzilla.')
             deps.append(req)
 
     return deps

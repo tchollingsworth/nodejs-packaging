@@ -39,5 +39,6 @@ metadata = json.load(open('package.json'))
 
 os.chdir('node_modules')
 
-for dep in metadata['dependencies'].iterkeys():
-    os.symlink(os.path.join(sitelib, dep), dep)
+if 'dependencies' in metadata:
+    for dep in metadata['dependencies'].iterkeys():
+        os.symlink(os.path.join(sitelib, dep), dep)

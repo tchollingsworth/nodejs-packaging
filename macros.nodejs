@@ -9,4 +9,4 @@
 
 # symlink dependencies so `npm link` works
 # this should be run in every module's %%install section
-%nodejs_symlink_deps %{_rpmconfigdir}/nodejs_symlink_deps %{nodejs_sitelib}
+%nodejs_symlink_deps %{_rpmconfigdir}/nodejs-symlink-deps %{nodejs_sitelib}

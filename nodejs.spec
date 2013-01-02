@@ -136,6 +136,8 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %changelog
 * Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-1
 - new upstream release 0.9.5
+- provide nodejs-devel for the moment
+- fix minor bugs in RPM magic
 
 * Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
 - new upstream release 0.9.4
