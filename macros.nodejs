@@ -10,3 +10,10 @@
 # symlink dependencies so `npm link` works
 # this should be run in every module's %%install section
 %nodejs_symlink_deps %{_rpmconfigdir}/nodejs-symlink-deps %{nodejs_sitelib}
+
+# patch package.json to fix a dependency
+# see `man npm-json` for details on writing dependencies for package.json files
+# e.g. `%%nodejs_fixdep frobber` makes any version of frobber do
+#      `%%nodejs_fixdep frobber '>1.0'` requires frobber > 1.0
+#      `%%nodejs_fixdep -r frobber removes the frobber dep
+%nodejs_fixdep %{_rpmconfigdir}/nodejs-fixdep

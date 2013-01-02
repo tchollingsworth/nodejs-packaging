@@ -11,6 +11,7 @@ Source2: nodejs.attr
 Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
+Source6: nodejs-fixdep
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel >= %{version}
@@ -114,6 +115,7 @@ install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
 install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
+install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -138,6 +140,8 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 - new upstream release 0.9.5
 - provide nodejs-devel for the moment
 - fix minor bugs in RPM magic
+- add nodejs_fixdep macro so packagers can easily adjust dependencies in
+  package.json files
 
 * Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
 - new upstream release 0.9.4
