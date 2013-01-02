@@ -14,7 +14,7 @@ Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
-BuildRequires: libuv-devel >= %{version}
+BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
