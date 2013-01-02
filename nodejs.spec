@@ -21,6 +21,8 @@ BuildRequires: zlib-devel
 BuildRequires: openssl-devel >= 1:1.0.1
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
+#provide nodejs-devel until it comes back for real
+Provides: nodejs-devel = %{version}-%{release}
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -136,6 +138,10 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc LICENSE
 
 %changelog
+* Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-2
+- provide nodejs-devel so modules can BuildRequire it (and be consistent
+  with other interpreted languages in the distro)
+
 * Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-1
 - new upstream release 0.9.5
 - provide nodejs-devel for the moment
