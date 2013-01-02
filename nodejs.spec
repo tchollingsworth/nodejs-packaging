@@ -1,5 +1,5 @@
 Name: nodejs
-Version: 0.9.4
+Version: 0.9.5
 Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
@@ -134,6 +134,9 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc LICENSE
 
 %changelog
+* Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-1
+- new upstream release 0.9.5
+
 * Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
 - new upstream release 0.9.4
 - system library patches are now upstream
