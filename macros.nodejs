@@ -9,6 +9,7 @@
 
 # symlink dependencies so `npm link` works
 # this should be run in every module's %%install section
+# pass the module name if the npm metadata is incorrect (e.g. multiple versions)
 %nodejs_symlink_deps %{_rpmconfigdir}/nodejs-symlink-deps %{nodejs_sitelib}
 
 # patch package.json to fix a dependency

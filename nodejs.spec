@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -138,6 +138,9 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc LICENSE
 
 %changelog
+* Wed Jan 02 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-3
+- make nodejs-symlink-deps actually work
+
 * Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-2
 - provide nodejs-devel so modules can BuildRequire it (and be consistent
   with other interpreted languages in the distro)

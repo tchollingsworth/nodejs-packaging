@@ -30,12 +30,20 @@ import sys
 #the %nodejs_symlink_deps macro passes %nodejs_sitelib as the first argument
 sitelib = sys.argv[1]
 
+metadata = json.load(open('package.json'))
+
+if len(sys.argv) > 2:
+    name = sys.argv[2]
+else:
+    name = metadata['name']
+
+os.chdir(os.path.join(os.environ['RPM_BUILD_ROOT'], sitelib.lstrip('/'), name))
+
 try:
     os.mkdir('node_modules')
 except OSError:
-    pass
-
-metadata = json.load(open('package.json'))
+    sys.stderr.write('WARNING: node_modules already exists. Make sure you have' +
+                        'no bundled dependencies.\n')
 
 os.chdir('node_modules')
 
