@@ -1,5 +1,5 @@
 Name: nodejs
-Version: 0.9.4
+Version: 0.9.5
 Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
@@ -11,15 +11,18 @@ Source2: nodejs.attr
 Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
+Source6: nodejs-fixdep
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
-BuildRequires: libuv-devel >= %{version}
+BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
+#provide nodejs-devel until it comes back for real
+Provides: nodejs-devel = %{version}-%{release}
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -114,6 +117,7 @@ install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
 install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
+install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -134,6 +138,17 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %doc LICENSE
 
 %changelog
+* Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-2
+- provide nodejs-devel so modules can BuildRequire it (and be consistent
+  with other interpreted languages in the distro)
+
+* Tue Jan 01 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-1
+- new upstream release 0.9.5
+- provide nodejs-devel for the moment
+- fix minor bugs in RPM magic
+- add nodejs_fixdep macro so packagers can easily adjust dependencies in
+  package.json files
+
 * Wed Dec 26 2012 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.4-1
 - new upstream release 0.9.4
 - system library patches are now upstream

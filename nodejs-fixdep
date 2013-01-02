@@ -1,9 +1,8 @@
 #!/usr/bin/python
 
-"""Symlink a node module's dependencies into the node_modules directory so users
-can `npm link` RPM-installed modules into their personal projects."""
+"""Modify a dependency listed in a package.json file"""
 
-# Copyright 2012 T.C. Hollingsworth <tchollingsworth@gmail.com>
+# Copyright 2013 T.C. Hollingsworth <tchollingsworth@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -25,20 +24,32 @@ can `npm link` RPM-installed modules into their personal projects."""
 
 import json
 import os
+import shutil
 import sys
 
-#the %nodejs_symlink_deps macro passes %nodejs_sitelib as the first argument
-sitelib = sys.argv[1]
+if not os.path.exists('package.json'):
+    shutil.copy2('package.json', 'package.json~')
 
-try:
-    os.mkdir('node_modules')
-except OSError:
-    pass
+md = json.load(open('package.json'))
 
-metadata = json.load(open('package.json'))
+if not 'dependencies':
+    sys.stderr.write("No dependencies listed in this module's package.json\n")
+    sys.exit(2)
 
-os.chdir('node_modules')
+if sys.argv[1] == '-r':
+    dep = sys.argv[2]
+    del md['dependencies'][dep]
+else:
+    dep = sys.argv[1]
 
-if 'dependencies' in metadata:
-    for dep in metadata['dependencies'].iterkeys():
-        os.symlink(os.path.join(sitelib, dep), dep)
+    if len(sys.argv) > 2:
+        ver = sys.argv[2]
+    else:
+        ver = '*'
+
+    md['dependencies'][dep] = ver
+
+fh = open('package.json', 'w')
+data = json.JSONEncoder(indent=4).encode(md)
+fh.write(data)
+fh.close()
