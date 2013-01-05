@@ -137,8 +137,8 @@ mkdir -p %{buildroot}%{_includedir}/node
 cp -p src/*.h %{buildroot}%{_includedir}/node
 
 #node-gyp needs common.gypi too
-mkdir -p %{_datadir}/node
-cp -p common.gypi %{_datadir}/node
+mkdir -p %{buildroot}%{_datadir}/node
+cp -p common.gypi %{buildroot}%{_datadir}/node
 
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
