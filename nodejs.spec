@@ -136,6 +136,10 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 mkdir -p %{buildroot}%{_includedir}/node
 cp -p src/*.h %{buildroot}%{_includedir}/node
 
+#node-gyp needs common.gypi too
+mkdir -p %{_datadir}/node
+cp -p common.gypi %{_datadir}/node
+
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
@@ -147,6 +151,7 @@ cp -p src/*.h %{buildroot}%{_includedir}/node
 
 %files devel
 %{_includedir}/node
+%{_datadir}/node
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
