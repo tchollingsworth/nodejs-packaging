@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -21,8 +21,6 @@ BuildRequires: zlib-devel
 BuildRequires: openssl-devel >= 1:1.0.1
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
-#provide nodejs-devel until it comes back for real
-Provides: nodejs-devel = %{version}-%{release}
 
 # Exclusive archs must match v8
 ExclusiveArch: %{ix86} x86_64 %{arm}
@@ -44,6 +42,14 @@ for easily building fast, scalable network applications.
 Node.js uses an event-driven, non-blocking I/O model that
 makes it lightweight and efficient, perfect for data-intensive
 real-time applications that run across distributed devices.
+
+%package devel
+Summary: JavaScript runtime - development headers
+Group: Development/Languages
+Requires: %{name} == %{version}-%{release}
+
+%description devel
+Development headers for the Node.js JavaScript runtime.
 
 %package docs
 Summary: Node.js API documentation
@@ -124,6 +130,12 @@ mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 
+#install development headers
+#FIXME: we probably don't really need *.h but node-gyp downloads the whole
+#freaking source tree so I can't be sure ATM
+mkdir -p %{buildroot}%{_includedir}/node
+cp -p src/*.h %{buildroot}%{_includedir}/node
+
 %files
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
@@ -133,11 +145,17 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 %{_rpmconfigdir}/nodejs*
 %dir %{_prefix}/lib/node_modules
 
+%files devel
+%{_includedir}/node
+
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
 %doc LICENSE
 
 %changelog
+* Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
+- install development headers
+
 * Wed Jan 02 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-3
 - make nodejs-symlink-deps actually work
 
@@ -159,6 +177,7 @@ rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
 - include documentation in subpackage
 - add RPM dependency generation and related magic
 - guard libuv depedency so it always gets bumped when nodejs does
+- add -devel subpackage with enough to make node-gyp happy
 
 * Wed Dec 19 2012 Dan Horák <dan[at]danny.cz> - 0.9.3-8
 - set exclusive arch list to match v8
