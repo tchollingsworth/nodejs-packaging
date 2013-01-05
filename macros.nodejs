@@ -4,6 +4,10 @@
 # nodejs library directory
 %nodejs_sitelib %{_prefix}/lib/node_modules
 
+#arch specific library directory
+#for future-proofing only; we don't do multilib
+%nodejs_sitearch %{nodejs_sitelib}
+
 # currently installed nodejs version
 %nodejs_version %(%{__nodejs} -v | sed s/v//)
 

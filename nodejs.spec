@@ -160,6 +160,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %changelog
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
+- add nodejs_sitearch macro
 
 * Wed Jan 02 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-3
 - make nodejs-symlink-deps actually work
