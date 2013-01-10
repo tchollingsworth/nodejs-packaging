@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 6%{?dist}
+Release: 7%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -110,7 +110,7 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 
-%make_install INSTALL='install -p'
+./tools/install.py %{buildroot}
 
 # and remove dtrace file again
 rm -rf %{buildroot}/%{_prefix}/lib/dtrace
@@ -162,6 +162,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-7
+- don't use make install since it rebuilds everything
+
 * Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-6
 - add %%{?isa}, epoch to v8 deps
 
