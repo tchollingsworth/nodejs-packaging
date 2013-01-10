@@ -5,6 +5,10 @@ Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
 URL: http://nodejs.org/
+
+# Exclusive archs must match v8
+ExclusiveArch: %{ix86} x86_64 %{arm}
+
 Source0: http://nodejs.org/dist/v%{version}/node-v%{version}.tar.gz
 Source1: macros.nodejs
 Source2: nodejs.attr
@@ -12,6 +16,11 @@ Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
+
+# This patch is Fedora-specific and allows building the release
+# binaries with debugging symbols
+Patch0004: 0004-Build-debugging-symbols-by-default.patch
+
 BuildRequires: v8-devel
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
@@ -19,22 +28,14 @@ BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
+
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
-
-# Exclusive archs must match v8
-ExclusiveArch: %{ix86} x86_64 %{arm}
 
 # Node.js currently has a conflict with the 'node' package in Fedora
 # The ham-radio group has agreed to rename their binary for us, but
 # in the meantime, we're setting an explicit Conflicts: here
 Conflicts: node <= 0.3.2-11
-
-# Patches
-
-# This patch is Fedora-specific and allows building the release
-# binaries with debugging symbols
-Patch0004: 0004-Build-debugging-symbols-by-default.patch
 
 %description
 Node.js is a platform built on Chrome's JavaScript runtime
