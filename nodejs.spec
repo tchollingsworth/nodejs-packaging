@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -105,7 +105,9 @@ export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
            --shared-http-parser \
            --without-npm \
            --without-dtrace
-make %{?_smp_mflags}
+
+# Setting BUILDTYPE=Debug builds both release and debug binaries
+make BUILDTYPE=Debug %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
@@ -117,6 +119,9 @@ rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
+
+# Install the debug binary and set its permissions
+install -Dpm0755 out/Debug/node %{buildroot}/%{_bindir}/node_g
 
 # own the sitelib directory
 mkdir -p %{buildroot}%{_prefix}/lib/node_modules
@@ -154,6 +159,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %dir %{_prefix}/lib/node_modules
 
 %files devel
+%{_bindir}/node_g
 %{_includedir}/node
 %{_datadir}/node
 
@@ -162,6 +168,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Thu Jan 10 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.9.5-8
+- Build debug binary and install it in the nodejs-devel subpackage
+
 * Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-7
 - don't use make install since it rebuilds everything
 
