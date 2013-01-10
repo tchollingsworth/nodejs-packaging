@@ -17,10 +17,6 @@ Source4: nodejs.req
 Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
 
-# This patch is Fedora-specific and allows building the release
-# binaries with debugging symbols
-Patch0004: 0004-Build-debugging-symbols-by-default.patch
-
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME,
 # so we need to be more explicit until spot fixes that
 %global v8_ge 3.13.7.5
@@ -70,8 +66,6 @@ The API documentation for the Node.js JavaScript runtime.
 %prep
 %setup -q -n node-v%{version}
 
-%patch0004 -p1
-
 # Make sure nothing gets included from bundled deps:
 # We only delete the source and header files, because
 # the remaining build scripts are still used.
@@ -98,8 +92,10 @@ find deps/uv -name "*.c" -exec rm -f {} \;
 find deps/uv -name "*.h" -exec rm -f {} \;
 
 %build
-export CFLAGS='%{optflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
-export CXXFLAGS='%{optflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+# build with debugging symbols and add defines from libuv (#892601)
+export CFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+
 ./configure --prefix=%{_prefix} \
            --shared-v8 \
            --shared-openssl \
@@ -110,7 +106,6 @@ export CXXFLAGS='%{optflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
            --without-npm \
            --without-dtrace
 make %{?_smp_mflags}
-
 
 %install
 rm -rf %{buildroot}
@@ -170,6 +165,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 * Wed Jan 09 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-5
 - add defines to match libuv (#892601)
 - make v8 dependency explicit (and thus more accurate)
+- add -g to $C(XX)FLAGS instead of patching configure to add it
 
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
