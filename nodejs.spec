@@ -110,7 +110,7 @@ make %{?_smp_mflags}
 %install
 rm -rf %{buildroot}
 
-./tools/install.py %{buildroot}
+./tools/install.py install %{buildroot}
 
 # and remove dtrace file again
 rm -rf %{buildroot}/%{_prefix}/lib/dtrace
