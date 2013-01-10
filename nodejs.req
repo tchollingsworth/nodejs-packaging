@@ -54,7 +54,7 @@ def main():
             if 'engines' in metadata and 'node' in metadata['engines']:
                 deps += process_dep(req, metadata['engines']['node'])
             else:
-                print req
+                deps += req
 
             if 'dependencies' in metadata:
                 for name, version in metadata['dependencies'].iteritems():
@@ -119,7 +119,8 @@ def convert_dep(req, operator, version):
 
         # 1 or 1.x or 1.x.x or ~1
         if len(parts) == 1 or parts[1] == 'x':
-            deps.append('{0} >= {1}'.format(req, parts[0]))
+            if parts[0] != 0:
+                deps.append('{0} >= {1}'.format(req, parts[0]))
             deps.append('{0} < {1}'.format(req, parts[0]+1))
 
         # 1.2.3 or 1.2.3-4 or 1.2.x or ~1.2.3 or 1.2

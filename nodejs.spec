@@ -166,6 +166,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - add defines to match libuv (#892601)
 - make v8 dependency explicit (and thus more accurate)
 - add -g to $C(XX)FLAGS instead of patching configure to add it
+- don't write pointless 'npm(foo) > 0' deps
 
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
