@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -89,8 +89,8 @@ find deps/uv -name "*.c" -exec rm -f {} \;
 find deps/uv -name "*.h" -exec rm -f {} \;
 
 %build
-export CFLAGS='%{optflags}'
-export CXXFLAGS='%{optflags}'
+export CFLAGS='%{optflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+export CXXFLAGS='%{optflags} -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
 ./configure --prefix=%{_prefix} \
            --shared-v8 \
            --shared-openssl \
@@ -158,6 +158,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Wed Jan 09 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-5
+- add defines to match libuv (#892601)
+
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
 - add nodejs_sitearch macro
