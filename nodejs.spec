@@ -21,13 +21,21 @@ Source6: nodejs-fixdep
 # binaries with debugging symbols
 Patch0004: 0004-Build-debugging-symbols-by-default.patch
 
-BuildRequires: v8-devel
+# V8 presently breaks ABI at least every x.y release while never bumping SONAME,
+# so we need to be more explicit until spot fixes that
+%global v8_ge 3.13.7.5
+%global v8_lt 3.14
+
+BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
+
+Requires: v8 >= %{v8_ge}
+Requires: v8 < %{v8_lt}
 
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
@@ -161,6 +169,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %changelog
 * Wed Jan 09 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-5
 - add defines to match libuv (#892601)
+- make v8 dependency explicit (and thus more accurate)
 
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
