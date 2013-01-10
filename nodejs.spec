@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -19,8 +19,8 @@ Source6: nodejs-fixdep
 
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME,
 # so we need to be more explicit until spot fixes that
-%global v8_ge 3.13.7.5
-%global v8_lt 3.14
+%global v8_ge 1:3.13.7.5
+%global v8_lt 1:3.14
 
 BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
@@ -30,8 +30,8 @@ BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 BuildRequires: openssl-devel >= 1:1.0.1
 
-Requires: v8 >= %{v8_ge}
-Requires: v8 < %{v8_lt}
+Requires: v8%{?isa} >= %{v8_ge}
+Requires: v8%{?isa} < %{v8_lt}
 
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
@@ -162,6 +162,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-6
+- add %%{?isa}, epoch to v8 deps
+
 * Wed Jan 09 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-5
 - add defines to match libuv (#892601)
 - make v8 dependency explicit (and thus more accurate)
