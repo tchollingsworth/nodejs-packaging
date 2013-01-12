@@ -54,7 +54,7 @@ def main():
             if 'engines' in metadata and 'node' in metadata['engines']:
                 deps += process_dep(req, metadata['engines']['node'])
             else:
-                deps += req
+                deps.append(req)
 
             if 'dependencies' in metadata:
                 for name, version in metadata['dependencies'].iteritems():

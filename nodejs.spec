@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 8%{?dist}
+Release: 9%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -168,6 +168,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Sat Jan 12 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-9
+- fix brown paper bag bug in requires generation script
+
 * Thu Jan 10 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.9.5-8
 - Build debug binary and install it in the nodejs-devel subpackage
 
