@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 9%{?dist}
+Release: 10%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -52,6 +52,7 @@ real-time applications that run across distributed devices.
 Summary: JavaScript runtime - development headers
 Group: Development/Languages
 Requires: %{name} == %{version}-%{release}
+Requires: libuv-devel http-parser-devel openssl-devel c-ares-devel zlib-devel
 
 %description devel
 Development headers for the Node.js JavaScript runtime.
@@ -131,8 +132,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.nodejs
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
 install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
-install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
-install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
+install -Dpm0755 %{SOURCE5} %{buildroot}%{_libexecdir}/nodejs/nodejs-symlink-deps
+install -pm0755 %{SOURCE6} %{buildroot}%{_libexecdir}/nodejs/nodejs-fixdep
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -168,6 +169,16 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Tue Jan 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-10
+- minor bugfixes to RPM magic
+  - nodejs-symlink-deps: don't create an empty node_modules dir when a module
+    has no dependencies
+  - nodes-fixdep: support adding deps when none exist
+- use libexecdir for RPM helper scripts (per packaging guidelines discussion)
+- Add the full set of headers usually bundled with node as deps to nodejs-devel.
+  This way `npm install` for native modules that assume the stuff bundled with
+  node exists will usually "just work".
+
 * Sat Jan 12 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-9
 - fix brown paper bag bug in requires generation script
 

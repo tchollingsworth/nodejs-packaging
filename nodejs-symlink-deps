@@ -39,14 +39,14 @@ else:
 
 os.chdir(os.path.join(os.environ['RPM_BUILD_ROOT'], sitelib.lstrip('/'), name))
 
-try:
-    os.mkdir('node_modules')
-except OSError:
-    sys.stderr.write('WARNING: node_modules already exists. Make sure you have' +
-                        'no bundled dependencies.\n')
-
-os.chdir('node_modules')
-
 if 'dependencies' in metadata:
+    try:
+        os.mkdir('node_modules')
+    except OSError:
+        sys.stderr.write('WARNING: node_modules already exists. Make sure you have ' +
+                            'no bundled dependencies.\n')
+
+    os.chdir('node_modules')
+
     for dep in metadata['dependencies'].iterkeys():
         os.symlink(os.path.join(sitelib, dep), dep)
