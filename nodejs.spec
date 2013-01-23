@@ -132,8 +132,8 @@ install -Dpm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.nodejs
 install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
 install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
-install -Dpm0755 %{SOURCE5} %{buildroot}%{_libexecdir}/nodejs/nodejs-symlink-deps
-install -pm0755 %{SOURCE6} %{buildroot}%{_libexecdir}/nodejs/nodejs-fixdep
+install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
+install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -174,7 +174,6 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
   - nodejs-symlink-deps: don't create an empty node_modules dir when a module
     has no dependencies
   - nodes-fixdep: support adding deps when none exist
-- use libexecdir for RPM helper scripts (per packaging guidelines discussion)
 - Add the full set of headers usually bundled with node as deps to nodejs-devel.
   This way `npm install` for native modules that assume the stuff bundled with
   node exists will usually "just work".
