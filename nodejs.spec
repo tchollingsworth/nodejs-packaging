@@ -154,15 +154,15 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
-%{_sysconfdir}/rpm/macros.nodejs
-%{_rpmconfigdir}/fileattrs/nodejs.attr
-%{_rpmconfigdir}/nodejs*
 %dir %{_prefix}/lib/node_modules
 
 %files devel
 %{_bindir}/node_g
 %{_includedir}/node
 %{_datadir}/node
+%{_sysconfdir}/rpm/macros.nodejs
+%{_rpmconfigdir}/fileattrs/nodejs.attr
+%{_rpmconfigdir}/nodejs*
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
@@ -177,6 +177,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - Add the full set of headers usually bundled with node as deps to nodejs-devel.
   This way `npm install` for native modules that assume the stuff bundled with
   node exists will usually "just work".
+-move RPM magic to nodejs-devel as requested by FPC
 
 * Sat Jan 12 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-9
 - fix brown paper bag bug in requires generation script
