@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.9.5
-Release: 10%{?dist}
+Release: 11%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -169,6 +169,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.5-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
 * Tue Jan 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-10
 - minor bugfixes to RPM magic
   - nodejs-symlink-deps: don't create an empty node_modules dir when a module
