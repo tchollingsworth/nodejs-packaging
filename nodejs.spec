@@ -1,6 +1,6 @@
 Name: nodejs
-Version: 0.9.5
-Release: 11%{?dist}
+Version: 0.10.0
+Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -19,8 +19,8 @@ Source6: nodejs-fixdep
 
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME,
 # so we need to be more explicit until spot fixes that
-%global v8_ge 1:3.13.7.5
-%global v8_lt 1:3.14
+%global v8_ge 1:3.14.5.7
+%global v8_lt 1:3.15
 
 BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
@@ -169,6 +169,10 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc LICENSE
 
 %changelog
+* Mon Mar 11 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-1
+- Update to stable 0.10.0 release
+- https://raw.github.com/joyent/node/v0.10.0/ChangeLog
+
 * Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.5-11
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
 
