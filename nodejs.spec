@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -139,6 +139,7 @@ install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
+cp -p LICENSE %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/
 
 #install development headers
 #FIXME: we probably don't really need *.h but node-gyp downloads the whole
@@ -166,9 +167,11 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
-%doc LICENSE
 
 %changelog
+* Tue Mar 12 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-2
+- Fix up documentation subpackage
+
 * Mon Mar 11 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-1
 - Update to stable 0.10.0 release
 - https://raw.github.com/joyent/node/v0.10.0/ChangeLog
