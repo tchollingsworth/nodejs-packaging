@@ -22,3 +22,6 @@
 #      `%%nodejs_fixdep frobber '>1.0'` requires frobber > 1.0
 #      `%%nodejs_fixdep -r frobber removes the frobber dep
 %nodejs_fixdep %{_rpmconfigdir}/nodejs-fixdep
+
+# ExclusiveArch listing for dependent packages
+%nodejs_arches %{ix86} x86_64 %{arm}

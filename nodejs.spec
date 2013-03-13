@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -16,11 +16,13 @@ Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
+Source7: nodejs_native.attr
 
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME,
 # so we need to be more explicit until spot fixes that
 %global v8_ge 1:3.14.5.7
 %global v8_lt 1:3.15
+%global v8_abi 3.14
 
 BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
@@ -33,7 +35,13 @@ BuildRequires: openssl-devel >= 1:1.0.1
 Requires: v8%{?isa} >= %{v8_ge}
 Requires: v8%{?isa} < %{v8_lt}
 
-#virtual provides for automatic depedency generation
+#we need ABI virtual provides where SONAMEs aren't enough/not present so deps
+#break when binary compatibility is broken
+%global nodejs_abi 0.10
+Provides: nodejs(abi) = %{nodejs_abi}
+Provides: nodejs(v8-abi) = %{v8_abi}
+
+#this corresponds to the "engine" requirement in package.json
 Provides: nodejs(engine) = %{version}
 
 # Node.js currently has a conflict with the 'node' package in Fedora
@@ -134,6 +142,17 @@ install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
 install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
+install -Dpm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs_native.attr
+
+
+# ensure Requires are added to every native module that match the Provides from
+# the nodejs build in the buildroot
+cat << EOF > %{buildroot}%{_rpmconfigdir}/nodejs_native.req
+#!/bin/sh
+echo 'nodejs(abi) = %nodejs_abi'
+echo 'nodejs(v8-abi) = %v8_abi'
+EOF
+chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -162,13 +181,20 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_includedir}/node
 %{_datadir}/node
 %{_sysconfdir}/rpm/macros.nodejs
-%{_rpmconfigdir}/fileattrs/nodejs.attr
+%{_rpmconfigdir}/fileattrs/nodejs*.attr
 %{_rpmconfigdir}/nodejs*
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Wed Mar 13 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-3
+- add virtual ABI provides for node and v8 so binary module's deps break when
+  binary compatibility is broken
+- automatically add matching Requires to nodejs binary modules
+- add %%nodejs_arches macro to future-proof ExcluseArch stanza in dependent
+  packages
+
 * Tue Mar 12 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-2
 - Fix up documentation subpackage
 
