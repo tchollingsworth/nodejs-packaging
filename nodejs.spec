@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -188,6 +188,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Wed Mar 20 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-4
+- fix escaping in dependency generator regular expressions (RHBZ#923941)
+
 * Wed Mar 13 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-3
 - add virtual ABI provides for node and v8 so binary module's deps break when
   binary compatibility is broken
