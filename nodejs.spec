@@ -1,6 +1,6 @@
 Name: nodejs
-Version: 0.10.0
-Release: 4%{?dist}
+Version: 0.10.1
+Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -188,6 +188,10 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Fri Mar 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.1-1
+- new upstream release 0.10.1
+  http://blog.nodejs.org/2013/03/21/node-v0-10-1-stable/
+
 * Wed Mar 20 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-4
 - fix escaping in dependency generator regular expressions (RHBZ#923941)
 
