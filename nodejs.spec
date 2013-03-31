@@ -1,5 +1,5 @@
 Name: nodejs
-Version: 0.10.1
+Version: 0.10.2
 Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
@@ -188,6 +188,10 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Sun Mar 31 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.2-1
+- new upstream release 0.10.2
+  http://blog.nodejs.org/2013/03/28/node-v0-10-2-stable/
+
 * Fri Mar 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.1-1
 - new upstream release 0.10.1
   http://blog.nodejs.org/2013/03/21/node-v0-10-1-stable/
