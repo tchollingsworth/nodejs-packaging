@@ -193,6 +193,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
   http://blog.nodejs.org/2013/03/28/node-v0-10-2-stable/
 - remove %%nodejs_arches macro since it will only be useful if it is present in
   the redhat-rpm-config package
+- add default filtering macro to remove unwanted Provides from native modules
 
 * Fri Mar 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.1-1
 - new upstream release 0.10.1

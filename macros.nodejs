@@ -22,3 +22,8 @@
 #      `%%nodejs_fixdep frobber '>1.0'` requires frobber > 1.0
 #      `%%nodejs_fixdep -r frobber removes the frobber dep
 %nodejs_fixdep %{_rpmconfigdir}/nodejs-fixdep
+
+# macro to filter unwanted provides from Node.js binary native modules
+%nodejs_default_filter %{expand: \
+%global __provides_exclude_from ^%{nodejs_sitearch}/.*\\.node$
+}
