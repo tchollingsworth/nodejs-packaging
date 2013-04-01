@@ -194,6 +194,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - remove %%nodejs_arches macro since it will only be useful if it is present in
   the redhat-rpm-config package
 - add default filtering macro to remove unwanted Provides from native modules
+- nodejs-symlink-deps now supports multiple modules in one SRPM properly
+- nodejs-symlink-deps also now supports a --check argument that works in the
+  current working directry instead of the buildroot
 
 * Fri Mar 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.1-1
 - new upstream release 0.10.1
