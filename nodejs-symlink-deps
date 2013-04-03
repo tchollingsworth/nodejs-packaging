@@ -56,3 +56,10 @@ for path in modules:
             
             if os.path.exists(target):
                 os.symlink(target, dep)
+
+        if check and '--no-devdeps' not in sys.argv and 'devDependencies' in md:
+            for dep in md['devDependencies']:
+                target = os.path.join(sitelib, dep)
+        
+                if os.path.exists(target):
+                    os.symlink(target, dep)
