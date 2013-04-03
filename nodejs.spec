@@ -191,6 +191,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 * Wed Apr 03 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.3-1
 - new upstream release 0.10.3
   http://blog.nodejs.org/2013/04/03/node-v0-10-3-stable/
+- nodejs-symlink-deps: only create symlink if target exists
 
 * Sun Mar 31 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.2-1
 - new upstream release 0.10.2

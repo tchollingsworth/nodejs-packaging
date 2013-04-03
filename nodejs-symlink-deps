@@ -52,4 +52,7 @@ for path in modules:
         os.chdir('node_modules')
 
         for dep in md['dependencies'].iterkeys():
-            os.symlink(os.path.join(sitelib, dep), dep)
+            target = os.path.join(sitelib, dep)
+            
+            if os.path.exists(target):
+                os.symlink(target, dep)
