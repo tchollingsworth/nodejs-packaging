@@ -27,14 +27,13 @@ import os
 import shutil
 import sys
 
-if not os.path.exists('package.json'):
+if not os.path.exists('package.json~'):
     shutil.copy2('package.json', 'package.json~')
 
 md = json.load(open('package.json'))
 
-if not 'dependencies':
-    sys.stderr.write("No dependencies listed in this module's package.json\n")
-    sys.exit(2)
+if not md['dependencies']:
+    md['dependencies'] = {}
 
 if sys.argv[1] == '-r':
     dep = sys.argv[2]

@@ -3,7 +3,7 @@
 """Symlink a node module's dependencies into the node_modules directory so users
 can `npm link` RPM-installed modules into their personal projects."""
 
-# Copyright 2012 T.C. Hollingsworth <tchollingsworth@gmail.com>
+# Copyright 2012, 2013 T.C. Hollingsworth <tchollingsworth@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -30,23 +30,36 @@ import sys
 #the %nodejs_symlink_deps macro passes %nodejs_sitelib as the first argument
 sitelib = sys.argv[1]
 
-metadata = json.load(open('package.json'))
-
-if len(sys.argv) > 2:
-    name = sys.argv[2]
+if '--check' in sys.argv:
+    check = True
+    modules = [os.getcwd()]
 else:
-    name = metadata['name']
+    check = False
+    br_sitelib = os.path.join(os.environ['RPM_BUILD_ROOT'], sitelib.lstrip('/'))
+    modules = [os.path.join(br_sitelib, module) for module in os.listdir(br_sitelib)]
 
-os.chdir(os.path.join(os.environ['RPM_BUILD_ROOT'], sitelib.lstrip('/'), name))
+for path in modules:
+    os.chdir(path)
+    md = json.load(open('package.json'))
+    
+    if 'dependencies' in md:
+        try:
+            os.mkdir('node_modules')
+        except OSError:
+            sys.stderr.write('WARNING: node_modules already exists. Make sure you have ' +
+                                'no bundled dependencies.\n')
 
-try:
-    os.mkdir('node_modules')
-except OSError:
-    sys.stderr.write('WARNING: node_modules already exists. Make sure you have' +
-                        'no bundled dependencies.\n')
+        os.chdir('node_modules')
 
-os.chdir('node_modules')
+        for dep in md['dependencies'].iterkeys():
+            target = os.path.join(sitelib, dep)
+            
+            if not check or os.path.exists(target):
+                os.symlink(target, dep)
 
-if 'dependencies' in metadata:
-    for dep in metadata['dependencies'].iterkeys():
-        os.symlink(os.path.join(sitelib, dep), dep)
+        if check and '--no-devdeps' not in sys.argv and 'devDependencies' in md:
+            for dep in md['devDependencies']:
+                target = os.path.join(sitelib, dep)
+        
+                if os.path.exists(target):
+                    os.symlink(target, dep)

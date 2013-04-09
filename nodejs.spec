@@ -1,10 +1,14 @@
 Name: nodejs
-Version: 0.9.5
-Release: 4%{?dist}
+Version: 0.10.3
+Release: 2%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
 URL: http://nodejs.org/
+
+# Exclusive archs must match v8
+ExclusiveArch: %{ix86} x86_64 %{arm}
+
 Source0: http://nodejs.org/dist/v%{version}/node-v%{version}.tar.gz
 Source1: macros.nodejs
 Source2: nodejs.attr
@@ -12,29 +16,41 @@ Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
-BuildRequires: v8-devel
+Source7: nodejs_native.attr
+
+# V8 presently breaks ABI at least every x.y release while never bumping SONAME,
+# so we need to be more explicit until spot fixes that
+%global v8_ge 1:3.14.5.7
+%global v8_lt 1:3.15
+%global v8_abi 3.14
+
+BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
 BuildRequires: c-ares-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
+# but we'll try our best
 BuildRequires: openssl-devel
 #virtual provides for automatic depedency generation
 Provides: nodejs(engine) = %{version}
 
-# Exclusive archs must match v8
-ExclusiveArch: %{ix86} x86_64 %{arm}
+Requires: v8%{?isa} >= %{v8_ge}
+Requires: v8%{?isa} < %{v8_lt}
+
+#we need ABI virtual provides where SONAMEs aren't enough/not present so deps
+#break when binary compatibility is broken
+%global nodejs_abi 0.10
+Provides: nodejs(abi) = %{nodejs_abi}
+Provides: nodejs(v8-abi) = %{v8_abi}
+
+#this corresponds to the "engine" requirement in package.json
+Provides: nodejs(engine) = %{version}
 
 # Node.js currently has a conflict with the 'node' package in Fedora
 # The ham-radio group has agreed to rename their binary for us, but
 # in the meantime, we're setting an explicit Conflicts: here
 Conflicts: node <= 0.3.2-11
-
-# Patches
-
-# This patch is Fedora-specific and allows building the release
-# binaries with debugging symbols
-Patch0004: 0004-Build-debugging-symbols-by-default.patch
 
 %description
 Node.js is a platform built on Chrome's JavaScript runtime
@@ -47,6 +63,7 @@ real-time applications that run across distributed devices.
 Summary: JavaScript runtime - development headers
 Group: Development/Languages
 Requires: %{name} == %{version}-%{release}
+Requires: libuv-devel http-parser-devel openssl-devel c-ares-devel zlib-devel
 
 %description devel
 Development headers for the Node.js JavaScript runtime.
@@ -60,8 +77,6 @@ The API documentation for the Node.js JavaScript runtime.
 
 %prep
 %setup -q -n node-v%{version}
-
-%patch0004 -p1
 
 # Make sure nothing gets included from bundled deps:
 # We only delete the source and header files, because
@@ -89,8 +104,10 @@ find deps/uv -name "*.c" -exec rm -f {} \;
 find deps/uv -name "*.h" -exec rm -f {} \;
 
 %build
-export CFLAGS='%{optflags}'
-export CXXFLAGS='%{optflags}'
+# build with debugging symbols and add defines from libuv (#892601)
+export CFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
+
 ./configure --prefix=%{_prefix} \
            --shared-v8 \
            --shared-openssl \
@@ -100,19 +117,23 @@ export CXXFLAGS='%{optflags}'
            --shared-http-parser \
            --without-npm \
            --without-dtrace
-make %{?_smp_mflags}
 
+# Setting BUILDTYPE=Debug builds both release and debug binaries
+make BUILDTYPE=Debug %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
 
-%make_install INSTALL='install -p'
+./tools/install.py install %{buildroot}
 
 # and remove dtrace file again
 rm -rf %{buildroot}/%{_prefix}/lib/dtrace
 
 # Set the binary permissions properly
 chmod 0755 %{buildroot}/%{_bindir}/node
+
+# Install the debug binary and set its permissions
+install -Dpm0755 out/Debug/node %{buildroot}/%{_bindir}/node_g
 
 # own the sitelib directory
 mkdir -p %{buildroot}%{_prefix}/lib/node_modules
@@ -124,11 +145,23 @@ install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
 install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
+install -Dpm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs_native.attr
+
+
+# ensure Requires are added to every native module that match the Provides from
+# the nodejs build in the buildroot
+cat << EOF > %{buildroot}%{_rpmconfigdir}/nodejs_native.req
+#!/bin/sh
+echo 'nodejs(abi) = %nodejs_abi'
+echo 'nodejs(v8-abi) = %v8_abi'
+EOF
+chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 cp -pr doc/* %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
 rm -f %{_defaultdocdir}/%{name}-docs-%{version}/html/nodejs.1
+cp -p LICENSE %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/
 
 #install development headers
 #FIXME: we probably don't really need *.h but node-gyp downloads the whole
@@ -144,20 +177,91 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %doc ChangeLog LICENSE README.md AUTHORS
 %{_bindir}/node
 %{_mandir}/man1/node.*
-%{_sysconfdir}/rpm/macros.nodejs
-%{_rpmconfigdir}/fileattrs/nodejs.attr
-%{_rpmconfigdir}/nodejs*
 %dir %{_prefix}/lib/node_modules
 
 %files devel
+%{_bindir}/node_g
 %{_includedir}/node
 %{_datadir}/node
+%{_sysconfdir}/rpm/macros.nodejs
+%{_rpmconfigdir}/fileattrs/nodejs*.attr
+%{_rpmconfigdir}/nodejs*
 
 %files docs
 %{_defaultdocdir}/%{name}-docs-%{version}
-%doc LICENSE
 
 %changelog
+* Thu Apr 04 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.3-2
+- nodejs-symlink-deps: symlink unconditionally in the buildroot
+
+* Wed Apr 03 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.3-1
+- new upstream release 0.10.3
+  http://blog.nodejs.org/2013/04/03/node-v0-10-3-stable/
+- nodejs-symlink-deps: only create symlink if target exists
+- nodejs-symlink-deps: symlink devDependencies when --check is used
+
+* Sun Mar 31 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.2-1
+- new upstream release 0.10.2
+  http://blog.nodejs.org/2013/03/28/node-v0-10-2-stable/
+- remove %%nodejs_arches macro since it will only be useful if it is present in
+  the redhat-rpm-config package
+- add default filtering macro to remove unwanted Provides from native modules
+- nodejs-symlink-deps now supports multiple modules in one SRPM properly
+- nodejs-symlink-deps also now supports a --check argument that works in the
+  current working directry instead of the buildroot
+
+* Fri Mar 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.1-1
+- new upstream release 0.10.1
+  http://blog.nodejs.org/2013/03/21/node-v0-10-1-stable/
+
+* Wed Mar 20 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-4
+- fix escaping in dependency generator regular expressions (RHBZ#923941)
+
+* Wed Mar 13 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.0-3
+- add virtual ABI provides for node and v8 so binary module's deps break when
+  binary compatibility is broken
+- automatically add matching Requires to nodejs binary modules
+- add %%nodejs_arches macro to future-proof ExcluseArch stanza in dependent
+  packages
+
+* Tue Mar 12 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-2
+- Fix up documentation subpackage
+
+* Mon Mar 11 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.0-1
+- Update to stable 0.10.0 release
+- https://raw.github.com/joyent/node/v0.10.0/ChangeLog
+
+* Thu Feb 14 2013 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 0.9.5-11
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_19_Mass_Rebuild
+
+* Tue Jan 22 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-10
+- minor bugfixes to RPM magic
+  - nodejs-symlink-deps: don't create an empty node_modules dir when a module
+    has no dependencies
+  - nodes-fixdep: support adding deps when none exist
+- Add the full set of headers usually bundled with node as deps to nodejs-devel.
+  This way `npm install` for native modules that assume the stuff bundled with
+  node exists will usually "just work".
+-move RPM magic to nodejs-devel as requested by FPC
+
+* Sat Jan 12 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-9
+- fix brown paper bag bug in requires generation script
+
+* Thu Jan 10 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.9.5-8
+- Build debug binary and install it in the nodejs-devel subpackage
+
+* Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-7
+- don't use make install since it rebuilds everything
+
+* Thu Jan 10 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-6
+- add %%{?isa}, epoch to v8 deps
+
+* Wed Jan 09 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-5
+- add defines to match libuv (#892601)
+- make v8 dependency explicit (and thus more accurate)
+- add -g to $C(XX)FLAGS instead of patching configure to add it
+- don't write pointless 'npm(foo) > 0' deps
+
 * Sat Jan 05 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.9.5-4
 - install development headers
 - add nodejs_sitearch macro
