@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.3
-Release: 2%{?dist}
+Release: 2%{?dist}.1
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -27,7 +27,7 @@ Source7: nodejs_native.attr
 BuildRequires: v8-devel >= %{v8_ge}
 BuildRequires: http-parser-devel >= 2.0
 BuildRequires: libuv-devel
-BuildRequires: c-ares-devel
+BuildRequires: c-ares19-devel
 BuildRequires: zlib-devel
 # Node.js requires some features from openssl 1.0.1 for SPDY support
 # but we'll try our best
@@ -113,6 +113,9 @@ export CXXFLAGS='%{optflags} -g -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64'
            --shared-openssl \
            --shared-zlib \
            --shared-cares \
+           --shared-cares-includes=%{_includedir}/c-ares19 \
+           --shared-cares-libpath=%{_libdir} \
+           --shared-cares-libname=cares19 \
            --shared-libuv \
            --shared-http-parser \
            --without-npm \
@@ -191,6 +194,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
+- Build against c-ares 1.9
+
 * Thu Apr 04 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.3-2
 - nodejs-symlink-deps: symlink unconditionally in the buildroot
 
