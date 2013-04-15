@@ -25,6 +25,7 @@
 %nodejs_fixdep %{_rpmconfigdir}/nodejs-fixdep
 
 # macro to filter unwanted provides from Node.js binary native modules
-%nodejs_default_filter %{expand: \
-%global __provides_exclude_from ^%{nodejs_sitearch}/.*\\.node$
-}
+%nodejs_default_filter %{?filter_setup: %{expand: \
+%filter_provides_in %{nodejs_sitearch}/.*\\.node$ \
+%filter_setup \
+}}
