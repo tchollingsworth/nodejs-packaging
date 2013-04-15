@@ -11,12 +11,10 @@ ExclusiveArch: %{ix86} x86_64 %{arm}
 
 Source0: http://nodejs.org/dist/v%{version}/node-v%{version}.tar.gz
 Source1: macros.nodejs
-Source2: nodejs.attr
 Source3: nodejs.prov
 Source4: nodejs.req
 Source5: nodejs-symlink-deps
 Source6: nodejs-fixdep
-Source7: nodejs_native.attr
 
 # V8 presently breaks ABI at least every x.y release while never bumping SONAME,
 # so we need to be more explicit until spot fixes that
@@ -143,13 +141,10 @@ mkdir -p %{buildroot}%{_prefix}/lib/node_modules
 
 # install rpm magic
 install -Dpm0644 %{SOURCE1} %{buildroot}%{_sysconfdir}/rpm/macros.nodejs
-install -Dpm0644 %{SOURCE2} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs.attr
-install -pm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
+install -Dpm0755 %{SOURCE3} %{buildroot}%{_rpmconfigdir}/nodejs.prov
 install -pm0755 %{SOURCE4} %{buildroot}%{_rpmconfigdir}/nodejs.req
 install -pm0755 %{SOURCE5} %{buildroot}%{_rpmconfigdir}/nodejs-symlink-deps
 install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
-install -Dpm0644 %{SOURCE7} %{buildroot}%{_rpmconfigdir}/fileattrs/nodejs_native.attr
-
 
 # ensure Requires are added to every native module that match the Provides from
 # the nodejs build in the buildroot
@@ -187,7 +182,6 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_includedir}/node
 %{_datadir}/node
 %{_sysconfdir}/rpm/macros.nodejs
-%{_rpmconfigdir}/fileattrs/nodejs*.attr
 %{_rpmconfigdir}/nodejs*
 
 %files docs
@@ -197,6 +191,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 * Mon Apr 15 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.4-1
 - new upstream release 0.10.4
   http://blog.nodejs.org/2013/04/11/node-v0-10-4-stable/
+- drop dependency generator files not supported on EL6
 
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9
