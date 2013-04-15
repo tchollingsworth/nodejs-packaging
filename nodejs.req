@@ -61,6 +61,11 @@ def main():
                 for name, version in metadata['dependencies'].iteritems():
                     req = 'npm(' + name + ')'
                     deps += process_dep(req, version)
+	elif path.endswith('.node'):
+	    #this is a native module so output the necessary requires
+	    fh = open('/usr/lib/rpm/nodejs_native.req')
+	    print fh.read()
+	    fh.close()
 
     print '\n'.join(deps)
     

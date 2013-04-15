@@ -149,11 +149,9 @@ install -pm0755 %{SOURCE6} %{buildroot}%{_rpmconfigdir}/nodejs-fixdep
 # ensure Requires are added to every native module that match the Provides from
 # the nodejs build in the buildroot
 cat << EOF > %{buildroot}%{_rpmconfigdir}/nodejs_native.req
-#!/bin/sh
-echo 'nodejs(abi) = %nodejs_abi'
-echo 'nodejs(v8-abi) = %v8_abi'
+nodejs(abi) = %nodejs_abi
+nodejs(v8-abi) = %v8_abi
 EOF
-chmod 0755 %{buildroot}%{_rpmconfigdir}/nodejs_native.req
 
 #install documentation
 mkdir -p %{buildroot}%{_defaultdocdir}/%{name}-docs-%{version}/html
@@ -195,6 +193,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - port nodejs_default_filter to EL6
 - add nodejs_find_provides_and_requires macro to invoke dependency generator
 - invoke the standard RPM provides and requires generators from the Node.js ones
+- write native module Requires from nodejs.req
 
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9
