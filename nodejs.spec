@@ -191,6 +191,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 * Mon Apr 15 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.4-1
 - new upstream release 0.10.4
   http://blog.nodejs.org/2013/04/11/node-v0-10-4-stable/
+- add no-op macro to permit spec compatibility with EPEL
 
 * Thu Apr 04 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.3-2
 - nodejs-symlink-deps: symlink unconditionally in the buildroot

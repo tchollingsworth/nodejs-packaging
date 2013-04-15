@@ -28,3 +28,6 @@
 %nodejs_default_filter %{expand: \
 %global __provides_exclude_from ^%{nodejs_sitearch}/.*\\.node$
 }
+
+# no-op macro to allow spec compatibility with EPEL
+%nodejs_find_provides_and_requires %{nil}
