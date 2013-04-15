@@ -194,6 +194,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - drop dependency generator files not supported on EL6
 - port nodejs_default_filter to EL6
 - add nodejs_find_provides_and_requires macro to invoke dependency generator
+- invoke the standard RPM provides and requires generators from the Node.js ones
 
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9

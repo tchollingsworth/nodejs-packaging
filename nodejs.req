@@ -29,6 +29,7 @@ Parsed from package.json.  See `man npm-json` for details.
 from __future__ import unicode_literals
 import json
 import re
+import subprocess
 import sys
 
 RE_VERSION = re.compile(r'\s*v?([<>=~]{0,2})\s*([0-9][0-9\.\-]*)\s*')
@@ -62,6 +63,10 @@ def main():
                     deps += process_dep(req, version)
 
     print '\n'.join(deps)
+    
+    # invoke the regular RPM requires generator                
+    p = subprocess.Popen(['/usr/lib/rpm/find-requires'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    print p.communicate(input='\n'.join(paths))[0]
 
 def process_dep(req, version):
     """Converts an individual npm dependency into RPM dependencies"""

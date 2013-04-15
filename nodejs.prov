@@ -26,6 +26,7 @@ Taken from package.json.  See `man npm-json` for details.
 # IN THE SOFTWARE.
 
 import json
+import subprocess
 import sys
 
 paths = [path.rstrip() for path in sys.stdin.readlines()]
@@ -43,3 +44,7 @@ for path in paths:
                 print '= ' + metadata['version']
             else:
                 print
+
+# invoke the regular RPM provides generator                
+p = subprocess.Popen(['/usr/lib/rpm/find-provides'], stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+print p.communicate(input='\n'.join(paths))[0]
