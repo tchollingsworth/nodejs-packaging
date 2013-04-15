@@ -1,6 +1,6 @@
 Name: nodejs
-Version: 0.10.3
-Release: 2%{?dist}.1
+Version: 0.10.4
+Release: 1%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -194,6 +194,10 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Mon Apr 15 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.4-1
+- new upstream release 0.10.4
+  http://blog.nodejs.org/2013/04/11/node-v0-10-4-stable/
+
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9
 
