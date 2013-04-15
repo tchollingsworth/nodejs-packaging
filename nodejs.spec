@@ -61,7 +61,7 @@ real-time applications that run across distributed devices.
 Summary: JavaScript runtime - development headers
 Group: Development/Languages
 Requires: %{name} == %{version}-%{release}
-Requires: libuv-devel http-parser-devel openssl-devel c-ares-devel zlib-devel
+Requires: libuv-devel http-parser-devel openssl-devel c-ares19-devel zlib-devel
 
 %description devel
 Development headers for the Node.js JavaScript runtime.
@@ -194,6 +194,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 - add nodejs_find_provides_and_requires macro to invoke dependency generator
 - invoke the standard RPM provides and requires generators from the Node.js ones
 - write native module Requires from nodejs.req
+- change the c-ares-devel Requires in -devel to match the BuildRequires
 
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9
