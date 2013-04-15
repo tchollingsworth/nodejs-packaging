@@ -193,6 +193,7 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
   http://blog.nodejs.org/2013/04/11/node-v0-10-4-stable/
 - drop dependency generator files not supported on EL6
 - port nodejs_default_filter to EL6
+- add nodejs_find_provides_and_requires macro to invoke dependency generator
 
 * Tue Apr 09 2013 Stephen Gallagher <sgallagh@redhat.com> - 0.10.3-2.1
 - Build against c-ares 1.9

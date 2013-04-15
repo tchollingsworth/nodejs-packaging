@@ -29,3 +29,10 @@
 %filter_provides_in %{nodejs_sitearch}/.*\\.node$ \
 %filter_setup \
 }}
+
+# macro to invoke the Node.js provides and requires generators
+%nodejs_find_provides_and_requires %{expand: \
+%global _use_internal_dependency_generator 0
+%global __find_provides %{_rpmconfigdir}/nodejs.prov
+%global __find_requires %{_rpmconfigdir}/nodejs.req
+}
