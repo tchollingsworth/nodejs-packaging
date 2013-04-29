@@ -42,7 +42,7 @@ for path in modules:
     os.chdir(path)
     md = json.load(open('package.json'))
     
-    if 'dependencies' in md:
+    if 'dependencies' in md or (check and 'devDependencies' in md):
         try:
             os.mkdir('node_modules')
         except OSError:
@@ -51,11 +51,12 @@ for path in modules:
 
         os.chdir('node_modules')
 
-        for dep in md['dependencies'].iterkeys():
-            target = os.path.join(sitelib, dep)
-            
-            if not check or os.path.exists(target):
-                os.symlink(target, dep)
+        if 'dependencies' in md:
+            for dep in md['dependencies'].iterkeys():
+                target = os.path.join(sitelib, dep)
+                
+                if not check or os.path.exists(target):
+                    os.symlink(target, dep)
 
         if check and '--no-devdeps' not in sys.argv and 'devDependencies' in md:
             for dep in md['devDependencies']:
