@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -188,6 +188,10 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Mon Apr 29 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.5-2
+- nodejs-symlink-deps: make it work when --check is used and just
+  devDependencies exist
+
 * Wed Apr 24 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.5-1
 - new upstream release 0.10.5
   http://blog.nodejs.org/2013/04/23/node-v0-10-5-stable/
