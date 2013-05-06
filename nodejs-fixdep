@@ -32,7 +32,7 @@ if not os.path.exists('package.json~'):
 
 md = json.load(open('package.json'))
 
-if not md['dependencies']:
+if 'dependencies' not in md:
     md['dependencies'] = {}
 
 if sys.argv[1] == '-r':

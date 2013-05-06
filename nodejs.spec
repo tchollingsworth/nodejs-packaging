@@ -1,6 +1,6 @@
 Name: nodejs
 Version: 0.10.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: JavaScript runtime
 License: MIT and ASL 2.0 and ISC and BSD
 Group: Development/Languages
@@ -188,6 +188,9 @@ cp -p common.gypi %{buildroot}%{_datadir}/node
 %{_defaultdocdir}/%{name}-docs-%{version}
 
 %changelog
+* Mon May 06 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.5-3
+- nodejs-fixdep: work properly when a package has no dependencies
+
 * Mon Apr 29 2013 T.C. Hollingsworth <tchollingsworth@gmail.com> - 0.10.5-2
 - nodejs-symlink-deps: make it work when --check is used and just
   devDependencies exist
