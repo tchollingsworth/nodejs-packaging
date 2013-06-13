@@ -30,6 +30,9 @@ import sys
 #the %nodejs_symlink_deps macro passes %nodejs_sitelib as the first argument
 sitelib = sys.argv[1]
 
+#read in the list of mutiple-versioned packages
+mvpkgs = open('/usr/lib/nodejs-packaging/multiple_version_pkgs').read().split('\n')
+
 if '--check' in sys.argv:
     check = True
     modules = [os.getcwd()]
@@ -52,15 +55,23 @@ for path in modules:
         os.chdir('node_modules')
 
         if 'dependencies' in md:
-            for dep in md['dependencies'].iterkeys():
-                target = os.path.join(sitelib, dep)
-                
+            for dep, ver in md['dependencies'].iteritems():
+                if dep in mvpkgs:
+                    depver = ver.lstrip('~').split('.')[0]
+                    target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
+                else:
+                    target = os.path.join(sitelib, dep)
+                    
                 if not check or os.path.exists(target):
                     os.symlink(target, dep)
 
         if check and '--no-devdeps' not in sys.argv and 'devDependencies' in md:
-            for dep in md['devDependencies']:
-                target = os.path.join(sitelib, dep)
-        
+            for dep, ver in md['devDependencies'].iteritems():
+                if dep in mvpkgs:
+                    depver = ver.lstrip('~').split('.')[0]
+                    target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
+                else:
+                    target = os.path.join(sitelib, dep)
+                    
                 if os.path.exists(target):
                     os.symlink(target, dep)
