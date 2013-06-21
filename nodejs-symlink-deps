@@ -31,7 +31,7 @@ import sys
 sitelib = sys.argv[1]
 
 #read in the list of mutiple-versioned packages
-mvpkgs = open('/usr/lib/nodejs-packaging/multiple_version_pkgs').read().split('\n')
+mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
 
 if '--check' in sys.argv:
     check = True
