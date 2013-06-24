@@ -6,7 +6,7 @@ Automatic dependency generator for Node.js libraries.
 Parsed from package.json.  See `man npm-json` for details.
 """
 
-# Copyright 2012 T.C. Hollingsworth <tchollingsworth@gmail.com>
+# Copyright 2012, 2013 T.C. Hollingsworth <tchollingsworth@gmail.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -52,20 +52,26 @@ def main():
             #write out the node.js interpreter dependency
             req = 'nodejs(engine)'
             
-            if 'engines' in metadata and 'node' in metadata['engines']:
+            if 'engines' in metadata and isinstance(metadata['engines'], dict) \
+                                                and 'node' in metadata['engines']:
                 deps += process_dep(req, metadata['engines']['node'])
             else:
                 deps.append(req)
 
             if 'dependencies' in metadata:
-                for name, version in metadata['dependencies'].iteritems():
-                    req = 'npm(' + name + ')'
-                    deps += process_dep(req, version)
-	elif path.endswith('.node'):
-	    #this is a native module so output the necessary requires
-	    fh = open('/usr/lib/rpm/nodejs_native.req')
-	    print fh.read()
-	    fh.close()
+                if isinstance(metadata['dependencies'], dict):
+                    for name, version in metadata['dependencies'].iteritems():
+                        req = 'npm(' + name + ')'
+                        deps += process_dep(req, version)
+                elif isinstance(metadata['dependencies'], list):
+                    for name in metadata['dependencies']:
+                        req = 'npm(' + name + ')'
+                        deps.append(req)
+                elif isinstance(metadata['dependencies'], basestring):
+                    req = 'npm(' + metadata['dependencies'] + ')'
+                    deps.append(req)
+                else:
+                    raise TypeError('invalid package.json: dependencies not a valid type')
 
     print '\n'.join(deps)
     
