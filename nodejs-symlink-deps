@@ -31,7 +31,7 @@ import sys
 def symlink_deps(deps, check):
     if isinstance(deps, dict):
         for dep, ver in deps.iteritems():
-            if dep in mvpkgs:
+            if dep in mvpkgs and ver != '' and ver != '*':
                 depver = ver.lstrip('~').split('.')[0]
                 target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
             else:
