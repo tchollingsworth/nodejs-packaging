@@ -27,6 +27,40 @@ import json
 import os
 import sys
 
+def symlink(source, dest):
+    try:
+        os.symlink(source, dest)
+    except OSError:
+        if os.path.islink(dest) and os.path.realpath(dest) == os.path.normpath(source):
+            sys.stderr.write("""
+WARNING: the symlink for dependency "{0}" already exists
+
+This could mean that the dependency exists in both devDependencies and 
+dependencies, which may cause trouble for people using this module with npm.
+
+Please report this to upstream. For more information, see:
+    <https://github.com/tchollingsworth/nodejs-packaging/pull/1>
+""".format(dest))
+            
+        else:
+            sys.stderr.write("""
+ERROR: the path for dependency "{0}" already exists
+
+This could mean that bundled modules are being installed.  Bundled libraries are
+forbidden in Fedora. For more information, see:
+    <https://fedoraproject.org/wiki/Packaging:No_Bundled_Libraries>
+    
+It is generally reccomended to remove the entire "node_modules" directory in
+%prep when it exists. For more information, see:
+    <https://fedoraproject.org/wiki/Packaging:Node.js#Removing_bundled_modules>
+    
+If you have obtained permission from the Fedora Packaging Committee to bundle
+libraries, please use `%nodejs_fixdep -r` in %prep to remove the dependency on
+the bundled module. This will prevent an unnecessary dependency on the system
+version of the module and eliminate this error.
+""".format(dest))
+            sys.exit(1)
+        
 
 def symlink_deps(deps, check):
     if isinstance(deps, dict):
@@ -38,18 +72,18 @@ def symlink_deps(deps, check):
                 target = os.path.join(sitelib, dep)
                 
             if not check or os.path.exists(target):
-                os.symlink(target, dep)
+                symlink(target, dep)
                 
     elif isinstance(deps, list):
         for dep in deps:
             target = os.path.join(sitelib, dep)
             if not check or os.path.exists(target):
-                os.symlink(target, dep)
+                symlink(target, dep)
     
     elif isinstance(deps, basestring):
         target = os.path.join(sitelib, deps)
         if not check or os.path.exists(target):
-            os.symlink(target, deps)
+            symlink(target, deps)
             
     else:
         raise TypeError("Invalid package.json: dependencies weren't a recognized type")
