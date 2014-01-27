@@ -28,6 +28,7 @@ Parsed from package.json.  See `man npm-json` for details.
 
 from __future__ import unicode_literals
 import json
+import os
 import re
 import subprocess
 import sys
@@ -45,6 +46,11 @@ def main():
 
     for path in paths:
         if not path.endswith('package.json'):
+            continue
+
+        # we only want the package.json in the toplevel module directory
+        pathparts = path.split(os.sep)
+        if not pathparts[-5:-2] == ['usr', 'lib', 'node_modules']:
             continue
         
         fh = open(path)
