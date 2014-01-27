@@ -43,34 +43,36 @@ def main():
     paths = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
-        if path.endswith('package.json'):
-            fh = open(path)
-            metadata = json.load(fh)
-            fh.close()
+        if not path.endswith('package.json'):
+            continue
+        
+        fh = open(path)
+        metadata = json.load(fh)
+        fh.close()
 
-            #write out the node.js interpreter dependency
-            req = 'nodejs(engine)'
-            
-            if 'engines' in metadata and isinstance(metadata['engines'], dict) \
-                                                and 'node' in metadata['engines']:
-                deps += process_dep(req, metadata['engines']['node'])
-            else:
-                deps.append(req)
+        #write out the node.js interpreter dependency
+        req = 'nodejs(engine)'
 
-            if 'dependencies' in metadata:
-                if isinstance(metadata['dependencies'], dict):
-                    for name, version in metadata['dependencies'].iteritems():
-                        req = 'npm(' + name + ')'
-                        deps += process_dep(req, version)
-                elif isinstance(metadata['dependencies'], list):
-                    for name in metadata['dependencies']:
-                        req = 'npm(' + name + ')'
-                        deps.append(req)
-                elif isinstance(metadata['dependencies'], basestring):
-                    req = 'npm(' + metadata['dependencies'] + ')'
+        if 'engines' in metadata and isinstance(metadata['engines'], dict) \
+                                            and 'node' in metadata['engines']:
+            deps += process_dep(req, metadata['engines']['node'])
+        else:
+            deps.append(req)
+
+        if 'dependencies' in metadata:
+            if isinstance(metadata['dependencies'], dict):
+                for name, version in metadata['dependencies'].iteritems():
+                    req = 'npm(' + name + ')'
+                    deps += process_dep(req, version)
+            elif isinstance(metadata['dependencies'], list):
+                for name in metadata['dependencies']:
+                    req = 'npm(' + name + ')'
                     deps.append(req)
-                else:
-                    raise TypeError('invalid package.json: dependencies not a valid type')
+            elif isinstance(metadata['dependencies'], basestring):
+                req = 'npm(' + metadata['dependencies'] + ')'
+                deps.append(req)
+            else:
+                raise TypeError('invalid package.json: dependencies not a valid type')
 
     print '\n'.join(deps)
 
