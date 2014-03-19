@@ -23,9 +23,17 @@
 # IN THE SOFTWARE.
 
 import json
+import optparse
 import os
 import shutil
 import sys
+
+p = optparse.OptionParser(
+        description='Modifies dependency entries in package.json files')
+
+p.add_option('-r', '--remove', action='store_true')
+
+options, args = p.parse_args()
 
 if not os.path.exists('package.json~'):
     shutil.copy2('package.json', 'package.json~')
@@ -35,14 +43,14 @@ md = json.load(open('package.json'))
 if 'dependencies' not in md:
     md['dependencies'] = {}
 
-if sys.argv[1] == '-r':
-    dep = sys.argv[2]
+if options.remove:
+    dep = args[0]
     del md['dependencies'][dep]
 else:
-    dep = sys.argv[1]
+    dep = args[0]
 
-    if len(sys.argv) > 2:
-        ver = sys.argv[2]
+    if len(args) > 1:
+        ver = args[1]
     else:
         ver = '*'
 
