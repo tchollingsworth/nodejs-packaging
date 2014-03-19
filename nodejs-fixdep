@@ -32,6 +32,10 @@ p = optparse.OptionParser(
         description='Modifies dependency entries in package.json files')
 
 p.add_option('-r', '--remove', action='store_true')
+p.add_option('--dev', action='store_const', const='devDependencies', 
+             dest='deptype', help='affect devDependencies')
+p.add_option('--optional', action='store_const', const='optionalDependencies', 
+             dest='deptype', help='affect optionalDependencies')
 
 options, args = p.parse_args()
 
@@ -40,12 +44,14 @@ if not os.path.exists('package.json~'):
 
 md = json.load(open('package.json'))
 
-if 'dependencies' not in md:
-    md['dependencies'] = {}
+deptype = options.deptype if options.deptype is not None else 'dependencies'
+
+if deptype not in md:
+    md[deptype] = {}
 
 if options.remove:
     dep = args[0]
-    del md['dependencies'][dep]
+    del md[deptype][dep]
 else:
     dep = args[0]
 
@@ -54,7 +60,7 @@ else:
     else:
         ver = '*'
 
-    md['dependencies'][dep] = ver
+    md[deptype][dep] = ver
 
 fh = open('package.json', 'w')
 data = json.JSONEncoder(indent=4).encode(md)
