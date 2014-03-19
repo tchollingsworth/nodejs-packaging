@@ -104,7 +104,7 @@ sitelib = sys.argv[1]
 #read in the list of mutiple-versioned packages
 mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
 
-if '--check' in sys.argv:
+if '--check' in sys.argv or '--build' in sys.argv:
     check = True
     modules = [os.getcwd()]
 else:
