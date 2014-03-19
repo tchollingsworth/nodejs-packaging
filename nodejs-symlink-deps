@@ -25,6 +25,7 @@ can `npm link` RPM-installed modules into their personal projects."""
 
 import json
 import os
+import shutil
 import sys
 
 def symlink(source, dest):
@@ -41,6 +42,14 @@ dependencies, which may cause trouble for people using this module with npm.
 Please report this to upstream. For more information, see:
     <https://github.com/tchollingsworth/nodejs-packaging/pull/1>
 """.format(dest))
+            
+        elif '--force' in sys.argv:
+            if os.path.isdir(dest):
+                shutil.rmtree(dest)
+            else:
+                os.unlink(dest)
+                
+            os.symlink(source, dest)
             
         else:
             sys.stderr.write("""
