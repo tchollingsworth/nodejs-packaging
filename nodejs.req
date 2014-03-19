@@ -33,7 +33,7 @@ import re
 import subprocess
 import sys
 
-RE_VERSION = re.compile(r'\s*v?([<>=~]{0,2})\s*([0-9][0-9\.\-]*)\s*')
+RE_VERSION = re.compile(r'\s*v?([<>=~^]{0,2})\s*([0-9][0-9\.\-]*)\s*')
 
 def main():
     #npm2rpm uses functions here to write BuildRequires so don't print anything
@@ -141,30 +141,40 @@ def convert_dep(req, operator, version):
         parts = [int(part) if part != 'x' and not '-' in part
                                                     else part for part in parts]
 
-        # 1 or 1.x or 1.x.x or ~1
+        # 1 or 1.x or 1.x.x or ~1 or ^1
         if len(parts) == 1 or parts[1] == 'x':
             if parts[0] != 0:
                 deps.append('{0} >= {1}'.format(req, parts[0]))
             deps.append('{0} < {1}'.format(req, parts[0]+1))
 
-        # 1.2.3 or 1.2.3-4 or 1.2.x or ~1.2.3 or 1.2
+        # 1.2.3 or 1.2.3-4 or 1.2.x or ~1.2.3 or ^1.2.3 or 1.2
         elif len(parts) == 3 or operator != '~':
             # 1.2.x or 1.2
             if len(parts) == 2 or parts[2] == 'x':
                 deps.append('{0} >= {1}.{2}'.format(req, parts[0], parts[1]))
                 deps.append('{0} < {1}.{2}'.format(req, parts[0], parts[1]+1))
-            # ~1.2.3
-            elif operator == '~':
+            # ~1.2.3 or ^0.1.2 (zero is special with the caret operator)
+            elif operator == '~' or (operator == '^' and parts[0] == 0 and parts[1] > 0):
                 deps.append('{0} >= {1}'.format(req, version))
                 deps.append('{0} < {1}.{2}'.format(req, parts[0], parts[1]+1))
-            # 1.2.3 or 1.2.3-4
+            #^1.2.3
+            elif operator == '^' and parts[0:1] != [0,0]:
+                deps.append('{0} >= {1}'.format(req, version))
+                deps.append('{0} < {1}'.format(req, parts[0]+1))
+            # 1.2.3 or 1.2.3-4 or ^0.0.3
             else:
                 deps.append('{0} = {1}'.format(req, version))
 
         # ~1.2
-        else:
+        elif operator == '~':
             deps.append('{0} >= {1}'.format(req, version))
             deps.append('{0} < {1}'.format(req, parts[0]+1))
+        
+        #^1.2
+        elif operator == '^':
+            deps.append('{0} >= {1}'.format(req, version))
+            deps.append('{0} < {1}'.format(req, parts[0]+1))
+            
 
     return deps
             
