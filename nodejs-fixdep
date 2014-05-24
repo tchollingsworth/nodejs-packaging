@@ -54,6 +54,16 @@ deptype = options.deptype if options.deptype is not None else 'dependencies'
 if deptype not in md:
     md[deptype] = {}
 
+# convert alternate JSON dependency representations to a dictionary
+if not options.caret and not isinstance(md[deptype], dict):
+    if isinstance(md[deptype], list):
+        deps = md[deptype]
+        md[deptype] = {}
+        for dep in deps:
+            md[deptype][dep] = '*'
+    elif isinstance(md[deptype], basestring):
+        md[deptype] = { md[deptype] : '*' }
+
 if options.remove:
     dep = args[0]
     del md[deptype][dep]
