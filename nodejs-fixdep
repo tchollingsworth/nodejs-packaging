@@ -25,8 +25,11 @@
 import json
 import optparse
 import os
+import re
 import shutil
 import sys
+
+RE_VERSION = re.compile(r'\s*v?([<>=~^]{0,2})\s*([0-9][0-9\.\-]*)\s*')
 
 p = optparse.OptionParser(
         description='Modifies dependency entries in package.json files')
@@ -36,6 +39,8 @@ p.add_option('--dev', action='store_const', const='devDependencies',
              dest='deptype', help='affect devDependencies')
 p.add_option('--optional', action='store_const', const='optionalDependencies', 
              dest='deptype', help='affect optionalDependencies')
+p.add_option('--caret', action='store_true',
+             help='convert all or specified dependencies to use the caret operator')
 
 options, args = p.parse_args()
 
@@ -52,6 +57,23 @@ if deptype not in md:
 if options.remove:
     dep = args[0]
     del md[deptype][dep]
+elif options.caret:
+    if not isinstance(md[deptype], dict):
+        sys.stderr.write('All dependencies are unversioned.  Unable to apply ' +
+                         'caret operator.\n')
+        sys.exit(2)
+        
+    deps = args if len(args) > 0 else md[deptype].keys()
+    for dep in deps:
+        if md[deptype][dep][0] == '^':
+            continue
+        elif md[deptype][dep][0] in ('~','0','1','2','3','4','5','6','7','8','9'):
+            ver = re.match(RE_VERSION, md[deptype][dep]).group(2)
+            md[deptype][dep] = '^' + ver
+        else:
+            sys.stderr.write('Attempted to convert non-numeric or tilde ' +
+                'dependency to caret.  This is not permitted.\n')
+            sys.exit(1)
 else:
     dep = args[0]
 
