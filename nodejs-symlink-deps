@@ -73,6 +73,9 @@ version of the module and eliminate this error.
 
 def symlink_deps(deps, check):
     if isinstance(deps, dict):
+        #read in the list of mutiple-versioned packages
+        mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
+            
         for dep, ver in deps.iteritems():
             if dep in mvpkgs and ver != '' and ver != '*':
                 depver = ver.lstrip('~').split('.')[0]
@@ -100,9 +103,6 @@ def symlink_deps(deps, check):
 
 #the %nodejs_symlink_deps macro passes %nodejs_sitelib as the first argument
 sitelib = sys.argv[1]
-
-#read in the list of mutiple-versioned packages
-mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
 
 if '--check' in sys.argv or '--build' in sys.argv:
     check = True
