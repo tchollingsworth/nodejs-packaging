@@ -78,7 +78,7 @@ def symlink_deps(deps, check):
             
         for dep, ver in deps.iteritems():
             if dep in mvpkgs and ver != '' and ver != '*':
-                depver = ver.lstrip('~').split('.')[0]
+                depver = ver.lstrip('~^').split('.')[0]
                 target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
             else:
                 target = os.path.join(sitelib, dep)
