@@ -50,26 +50,32 @@ def main():
         metadata = json.load(fh)
         fh.close()
 
-        #write out the node.js interpreter dependency
-        req = 'nodejs(engine)'
-
-        if 'engines' in metadata and isinstance(metadata['engines'], dict) \
-                                            and 'node' in metadata['engines']:
-            deps += process_dep(req, metadata['engines']['node'])
+        if '--optional' in sys.argv:
+            deptype = 'optionalDependencies'
         else:
-            deps.append(req)
+            deptype = 'dependencies'
 
-        if 'dependencies' in metadata:
-            if isinstance(metadata['dependencies'], dict):
-                for name, version in metadata['dependencies'].iteritems():
+        if deptype == 'dependencies':
+            #write out the node.js interpreter dependency
+            req = 'nodejs(engine)'
+
+            if 'engines' in metadata and isinstance(metadata['engines'], dict) \
+                                                and 'node' in metadata['engines']:
+                deps += process_dep(req, metadata['engines']['node'])
+            else:
+                deps.append(req)
+
+        if deptype in metadata:
+            if isinstance(metadata[deptype], dict):
+                for name, version in metadata[deptype].iteritems():
                     req = 'npm(' + name + ')'
                     deps += process_dep(req, version)
-            elif isinstance(metadata['dependencies'], list):
-                for name in metadata['dependencies']:
+            elif isinstance(metadata[deptype], list):
+                for name in metadata[deptype]:
                     req = 'npm(' + name + ')'
                     deps.append(req)
-            elif isinstance(metadata['dependencies'], basestring):
-                req = 'npm(' + metadata['dependencies'] + ')'
+            elif isinstance(metadata[deptype], basestring):
+                req = 'npm(' + metadata[deptype] + ')'
                 deps.append(req)
             else:
                 raise TypeError('invalid package.json: dependencies not a valid type')
