@@ -77,7 +77,7 @@ def symlink_deps(deps, check):
         mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
             
         for dep, ver in deps.iteritems():
-            if dep in mvpkgs and ver != '' and ver != '*':
+            if dep in mvpkgs and ver != '' and ver != '*' and ver != 'latest':
                 depver = ver.lstrip('~^').split('.')[0]
                 target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
             else:
