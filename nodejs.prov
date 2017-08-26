@@ -6,6 +6,7 @@ Automatic provides generator for Node.js libraries.
 Taken from package.json.  See `man npm-json` for details.
 """
 # Copyright 2012 T.C. Hollingsworth <tchollingsworth@gmail.com>
+# Copyright 2017 Tomas Tomecek <ttomecek@redhat.com>
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to
@@ -25,21 +26,51 @@ Taken from package.json.  See `man npm-json` for details.
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-import json
+from __future__ import print_function
+
+import os
 import sys
+import json
 
-paths = [path.rstrip() for path in sys.stdin.readlines()]
 
-for path in paths:
-    if path.endswith('package.json'):
-        fh = open(path)
-        metadata = json.load(fh)
-        fh.close()
+def handle_package_json(path, bundled=False):
+    """
+    process package.json file available on path, print RPM dependency based on name and version
+    """
+    if not path.endswith('package.json') or not os.path.isfile(path):
+        return
+    fh = open(path)
+    metadata = json.load(fh)
+    fh.close()
 
-        if 'name' in metadata and not ('private' in metadata and metadata['private']):
-            print 'npm(' + metadata['name'] + ')',
+    if 'name' in metadata and not ('private' in metadata and metadata['private']):
+        if bundled:
+            value = "bundled(nodejs-%s) = %s" % (metadata["name"], metadata["version"])
+        else:
+            value = "npm(%s) = %s" % (metadata["name"], metadata["version"])
+        print(value)
 
-            if 'version' in metadata:
-                print '= ' + metadata['version']
-            else:
-                print
+
+def handle_module(path, bundled):
+    """
+    process npm module and all its bundled dependencies
+    """
+    handle_package_json(path, bundled=bundled)
+    if not os.path.isdir(path):
+        path = os.path.dirname(path)
+    node_modules_dir_candidate = os.path.join(path, "node_modules")
+    if os.path.isdir(node_modules_dir_candidate):
+        for module_path in os.listdir(node_modules_dir_candidate):
+            p_json_file = os.path.join(node_modules_dir_candidate, module_path, "package.json")
+            handle_module(p_json_file, bundled=True)
+
+
+def main():
+    paths = [path.rstrip() for path in sys.stdin.readlines()]
+
+    for path in paths:
+        handle_module(path, bundled=False)
+
+
+if __name__ == '__main__':
+    main()
