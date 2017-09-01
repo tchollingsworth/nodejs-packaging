@@ -32,6 +32,7 @@ import os
 import sys
 import json
 
+provides = set()
 
 def handle_package_json(path, bundled=False):
     """
@@ -48,7 +49,7 @@ def handle_package_json(path, bundled=False):
             value = "bundled(nodejs-%s) = %s" % (metadata["name"], metadata["version"])
         else:
             value = "npm(%s) = %s" % (metadata["name"], metadata["version"])
-        print(value)
+        provides.add(value)
 
 
 def handle_module(path, bundled):
@@ -70,6 +71,9 @@ def main():
 
     for path in paths:
         handle_module(path, bundled=False)
+
+    for provide in sorted(provides):
+        print(provide)
 
 
 if __name__ == '__main__':
