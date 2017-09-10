@@ -28,10 +28,22 @@ Parsed from package.json.  See `man npm-json` for details.
 
 from __future__ import unicode_literals
 import json
+import os
 import re
 import sys
 
 RE_VERSION = re.compile(r'\s*v?([<>=~^]{0,2})\s*([0-9][0-9\.\-]*)\s*')
+
+def has_all_bundled(path):
+    # remove 'package.json'
+    path = os.path.dirname(path)
+    node_modules_dir_candidate = os.path.join(path, "node_modules")
+    if os.path.isdir(node_modules_dir_candidate):
+        modules_abs_path = map(lambda x: os.path.join(node_modules_dir_candidate, x),
+                               os.listdir(node_modules_dir_candidate))
+        any_link = any([os.path.islink(x) for x in modules_abs_path])
+        return not any_link
+
 
 def main():
     #npm2rpm uses functions here to write BuildRequires so don't print anything
@@ -45,7 +57,10 @@ def main():
     for path in paths:
         if not path.endswith('package.json'):
             continue
-        
+
+        if has_all_bundled(path):
+            continue
+
         fh = open(path)
         metadata = json.load(fh)
         fh.close()

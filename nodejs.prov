@@ -76,8 +76,11 @@ def handle_module(path, bundled):
     node_modules_dir_candidate = os.path.join(path, "node_modules")
     if os.path.isdir(node_modules_dir_candidate):
         for module_path in os.listdir(node_modules_dir_candidate):
-            p_json_file = os.path.join(node_modules_dir_candidate, module_path, "package.json")
-            handle_module(p_json_file, bundled=True)
+            module_abs_path = os.path.join(node_modules_dir_candidate, module_path)
+            # skip modules which are linked against system module
+            if not os.path.islink(module_abs_path):
+                p_json_file = os.path.join(module_abs_path, "package.json")
+                handle_module(p_json_file, bundled=True)
 
 
 def main():
