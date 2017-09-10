@@ -44,12 +44,26 @@ def handle_package_json(path, bundled=False):
     metadata = json.load(fh)
     fh.close()
 
-    if 'name' in metadata and not ('private' in metadata and metadata['private']):
-        if bundled:
-            value = "bundled(nodejs-%s) = %s" % (metadata["name"], metadata["version"])
-        else:
-            value = "npm(%s) = %s" % (metadata["name"], metadata["version"])
-        provides.add(value)
+    try:
+        if metadata['private']:
+            return
+    except KeyError:
+        pass
+
+    try:
+        name = metadata["name"]
+    except KeyError:
+        return
+    try:
+        version = metadata["version"]
+    except KeyError:
+        return
+
+    if bundled:
+        value = "bundled(nodejs-%s) = %s" % (name, version)
+    else:
+        value = "npm(%s) = %s" % (name, version)
+    provides.add(value)
 
 
 def handle_module(path, bundled):
