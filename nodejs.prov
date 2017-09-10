@@ -81,6 +81,7 @@ def handle_module(path, bundled):
 
 
 def main():
+    """ read list of package.json paths from stdin """
     paths = [path.rstrip() for path in sys.stdin.readlines()]
 
     for path in paths:
