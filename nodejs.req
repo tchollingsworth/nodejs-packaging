@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """
 Automatic dependency generator for Node.js libraries.
@@ -82,14 +82,14 @@ def main():
 
         if deptype in metadata:
             if isinstance(metadata[deptype], dict):
-                for name, version in metadata[deptype].iteritems():
+                for name, version in metadata[deptype].items():
                     req = 'npm(' + name + ')'
                     deps.append(process_dep(req, version))
             elif isinstance(metadata[deptype], list):
                 for name in metadata[deptype]:
                     req = 'npm(' + name + ')'
                     deps.append(req)
-            elif isinstance(metadata[deptype], basestring):
+            elif isinstance(metadata[deptype], str):
                 req = 'npm(' + metadata[deptype] + ')'
                 deps.append(req)
             else:

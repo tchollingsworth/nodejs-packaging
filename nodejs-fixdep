@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """Modify a dependency listed in a package.json file"""
 
@@ -62,7 +62,7 @@ if not options.caret and not isinstance(md[deptype], dict):
         md[deptype] = {}
         for dep in deps:
             md[deptype][dep] = '*'
-    elif isinstance(md[deptype], basestring):
+    elif isinstance(md[deptype], str):
         md[deptype] = { md[deptype] : '*' }
 
 if options.remove:
@@ -79,7 +79,7 @@ elif options.move:
             elif isinstance(md[fromtype], list) and md[fromtype].count(dep) > 0:
                 ver = '*'
                 md[fromtype].remove(dep)
-            elif isinstance(md[fromtype], basestring) and md[fromtype] == dep:
+            elif isinstance(md[fromtype], str) and md[fromtype] == dep:
                 ver = '*'
                 del md[fromtype]
     if ver != None:

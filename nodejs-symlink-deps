@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 """Symlink a node module's dependencies into the node_modules directory so users
 can `npm link` RPM-installed modules into their personal projects."""
@@ -76,7 +76,7 @@ def symlink_deps(deps, check):
         #read in the list of mutiple-versioned packages
         mvpkgs = open('/usr/share/node/multiver_modules').read().split('\n')
             
-        for dep, ver in deps.iteritems():
+        for dep, ver in deps.items():
             if dep in mvpkgs and ver != '' and ver != '*' and ver != 'latest':
                 depver = ver.lstrip('~^').split('.')[0]
                 target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
@@ -92,7 +92,7 @@ def symlink_deps(deps, check):
             if not check or os.path.exists(target):
                 symlink(target, dep)
     
-    elif isinstance(deps, basestring):
+    elif isinstance(deps, str):
         target = os.path.join(sitelib, deps)
         if not check or os.path.exists(target):
             symlink(target, deps)
