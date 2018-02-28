@@ -24,6 +24,10 @@
 #      `%%nodejs_fixdep -r frobber removes the frobber dep
 %nodejs_fixdep %{_rpmconfigdir}/nodejs-fixdep
 
+# patch package.json to set the package version
+# e.g. `%%nodejs_setversion 1.2.3` 
+%nodejs_setversion %{_rpmconfigdir}/nodejs-setversion
+
 # macro to filter unwanted provides from Node.js binary native modules
 %nodejs_default_filter %{expand: \
 %global __provides_exclude_from ^%{nodejs_sitearch}/.*\\.node$
