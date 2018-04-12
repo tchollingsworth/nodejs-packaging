@@ -1,4 +1,4 @@
 %__nodejs_provides  %{_rpmconfigdir}/nodejs.prov
 %__nodejs_requires  %{_rpmconfigdir}/nodejs.req
 %__nodejs_suggests  %{_rpmconfigdir}/nodejs.req --optional
-%__nodejs_path  ^/usr/lib.*/node_modules/.*/package\\.json$
+%__nodejs_path  ^/usr/lib(64)?/node_modules/[^/]+/package\\.json$
