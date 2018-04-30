@@ -163,7 +163,7 @@ def convert_dep(req, operator, version):
             deps.append('{0} < {1}'.format(req, parts[0]+1))
 
         # 1.2.3 or 1.2.3-4 or 1.2.x or ~1.2.3 or ^1.2.3 or 1.2
-        elif len(parts) == 3 or operator != '~':
+        elif len(parts) == 3 or not operator:
             # 1.2.x or 1.2
             if len(parts) == 2 or parts[2] == 'x':
                 deps.append('{0} >= {1}.{2}'.format(req, parts[0], parts[1]))
