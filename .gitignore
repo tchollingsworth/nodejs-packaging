@@ -1,5 +1,5 @@
-test/package.json
-test/nodejs.prov.err
-test/nodejs.prov.out
-test/nodejs.req.err
-test/nodejs.req.out
+test/*/package.json
+test/*/nodejs.prov.err
+test/*/nodejs.prov.out
+test/*/nodejs.req.err
+test/*/nodejs.req.out
