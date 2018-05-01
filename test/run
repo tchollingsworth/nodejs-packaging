@@ -1,8 +1,11 @@
 #!/bin/sh
 
-set -e
-
 sed -e "s|//.*$||" < test/package.json.in > test/package.json
+
+echo test/package.json | ./nodejs.prov test/package.json > test/nodejs.prov.out 2> test/nodejs.prov.err
+diff -uw test/nodejs.prov.out.exp test/nodejs.prov.out || exit 1
+diff -uw test/nodejs.prov.err.exp test/nodejs.prov.err || exit 1
+
 echo test/package.json | ./nodejs.req test/package.json > test/nodejs.req.out 2> test/nodejs.req.err
 diff -uw test/nodejs.req.out.exp test/nodejs.req.out || exit 1
 diff -uw test/nodejs.req.err.exp test/nodejs.req.err || exit 1
