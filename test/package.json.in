@@ -1,0 +1,99 @@
+{
+  "name": "test",
+  "dependencies": {
+    // Single version
+    "test100": "1",
+    "test101": "=1",
+    "test102": "v1",
+    "test103": "=v1",
+    "test104": "1.2",
+    "test105": "=1.2",
+    "test106": "v1.2",
+    "test107": "=v1.2",
+    "test108": "1.2.3",
+    "test109": "=1.2.3",
+    "test110": "v1.2.3",
+    "test111": "=v1.2.3",
+
+    // Ranges with one comparator
+    "test200": ">1",
+    "test201": ">1.2",
+    "test202": ">1.2.3",
+    "test203": ">=1",
+    "test204": ">=1.2",
+    "test205": ">=1.2.3",
+    "test206": "<2",
+    "test207": "<2.3",
+    "test208": "<2.3.4",
+    "test209": "<=2",
+    "test210": "<=2.3",
+    "test211": "<=2.3.4",
+
+    // Ranges with two comparators
+    "test300": ">1 <2",
+    "test301": ">1.2 <2.3",
+    "test302": ">1.2.3 <2.3.4",
+    "test303": ">=1 <=2",
+    "test304": ">=1.2 <=2.3",
+    "test305": ">=1.2.3 <=2.3.4",
+    "test306": "<2 >1",
+    "test307": "<2.3 >1.2",
+    "test308": "<2.3.4 >1.2.3",
+    "test309": "<=2 >=1",
+    "test310": "<=2.3 >=1.2",
+    "test311": "<=2.3.4 >=1.2.3",
+
+    // Hyphen ranges
+    "test400": "1.2.3 - 2.3.4",
+    "test401": "1.2.3 - 2.3",
+    "test402": "1.2.3 - 2",
+    "test403": "1.2 - 2.3.4",
+    "test404": "1 - 2.3.4",
+    "test405": "1.2 - 2.3",
+    "test406": "1.2 - 2",
+    "test407": "1 - 2.3",
+    "test408": "1 - 2",
+
+    // X-Ranges
+    "test500": "1.2.x",
+    "test501": "1.2.*",
+    "test502": "1.x",
+    "test503": "1.*",
+    "test504": "*",
+    "test505": "",
+
+    // Tilde ranges
+    "test600": "~1.2.3",
+    "test601": "~1.2.x",
+    "test602": "~1.2",
+    "test603": "~1.x",
+    "test604": "~1",
+
+    // Caret ranges
+    "test700": "^1.2.3",
+    "test701": "^0.2.3",
+    "test702": "^0.0.3",
+    "test703": "^1.2.x",
+    "test704": "^1.2",
+    "test705": "^0.1.x",
+    "test706": "^0.1",
+    "test707": "^1.x",
+    "test708": "^1",
+    "test709": "^0.0.x",
+    "test710": "^0.0",
+    "test711": "^0.x",
+    "test712": "^0",
+
+    // More than two comparators in a set
+    // (no reason for this to ever appear, but it is permitted)
+    "test800": ">1.2 <2.0 <1.9",
+
+    // The following cases are not implemented currently...
+
+    // Multiple comparator sets separated by ||
+    "test900": "^1.2 || ^2.2"
+
+    // The whole pre-release stuff: https://docs.npmjs.com/misc/semver//prerelease-tags
+    // which is not even enumerated here because it is so complex.
+  }
+}
