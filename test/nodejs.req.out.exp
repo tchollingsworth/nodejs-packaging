@@ -1,3 +1,4 @@
+(nodejs(engine) >= 6 with nodejs(engine) < 10)
 (npm(test100) >= 1 with npm(test100) < 2)
 (npm(test101) >= 1 with npm(test101) < 2)
 (npm(test102) >= 1 with npm(test102) < 2)
