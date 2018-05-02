@@ -5,10 +5,10 @@ do
     sed -e "s|//.*$||" < test/$test/package.json.in > test/$test/package.json
 
     echo test/$test/package.json | ./nodejs.prov test/$test/package.json > test/$test/nodejs.prov.out 2> test/$test/nodejs.prov.err
-    diff -uw test/$test/nodejs.prov.out.exp test/$test/nodejs.prov.out || exit 1
     diff -uw test/$test/nodejs.prov.err.exp test/$test/nodejs.prov.err || exit 1
+    diff -uw test/$test/nodejs.prov.out.exp test/$test/nodejs.prov.out || exit 1
 
     echo test/$test/package.json | ./nodejs.req test/$test/package.json > test/$test/nodejs.req.out 2> test/$test/nodejs.req.err
-    diff -uw test/$test/nodejs.req.out.exp test/$test/nodejs.req.out || exit 1
     diff -uw test/$test/nodejs.req.err.exp test/$test/nodejs.req.err || exit 1
+    diff -uw test/$test/nodejs.req.out.exp test/$test/nodejs.req.out || exit 1
 done
