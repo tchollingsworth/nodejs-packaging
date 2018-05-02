@@ -88,6 +88,11 @@
     "test711": "^0.x",
     "test712": "^0",
 
+    // Space after the operator
+    // (the grammar does not permit this, but it is accepted in practice)
+    "test750": ">= 0.10",
+    "test751": ">= 0.10 <= 6",
+
     // More than two comparators in a set
     // (no reason for this to ever appear, but it is permitted)
     "test800": ">1.2 <2.0 <1.9",
