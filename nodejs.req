@@ -220,9 +220,8 @@ def convert_dep(req, version):
 
     # For each comparator in the set, narrow the range to match it,
     # using the two helper functions.
-    for comparator in version.split():
-        operator, v = re.match(r'(<=|>=|<|>|=|\^|~)?(.*)', comparator).groups()
-        if operator is None:
+    for operator, v in re.findall(r'(<=|>=|<|>|=|\^|~)?\s*(\S+)\s*', version):
+        if not operator:
             operator = '='
         parts = parse_version(v)
 

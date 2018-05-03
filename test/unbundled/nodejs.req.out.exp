@@ -68,5 +68,7 @@ npm(test709) < 0.1
 npm(test710) < 0.1
 npm(test711) < 1
 npm(test712) < 1
+npm(test750) >= 0.10
+(npm(test751) >= 0.10 with npm(test751) <= 6)
 (npm(test800) > 1.2 with npm(test800) < 1.9)
 npm(test900)
