@@ -25,6 +25,7 @@ can `npm link` RPM-installed modules into their personal projects."""
 
 import json
 import os
+import re
 import shutil
 import sys
 
@@ -78,7 +79,7 @@ def symlink_deps(deps, check):
             
         for dep, ver in deps.items():
             if dep in mvpkgs and ver != '' and ver != '*' and ver != 'latest':
-                depver = ver.lstrip('~^').split('.')[0]
+                depver = re.sub('^ *(~|^|=|>=|<=) *', '', ver).split('.')[0]
                 target = os.path.join(sitelib, '{0}@{1}'.format(dep, depver))
             else:
                 target = os.path.join(sitelib, dep)
